@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.news_recommendation_system.HelloController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="502.0" prefWidth="776.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="328.0" layoutY="47.0" prefHeight="45.0" prefWidth="121.0" text="Sign Up">
+         <font>
+            <Font size="30.0" />
+         </font>
+      </Label>
+      <TextField layoutX="93.0" layoutY="176.0" text="First Name" />
+      <TextField layoutX="314.0" layoutY="176.0" text="Last Name" />
+      <TextField layoutX="544.0" layoutY="176.0" text="Email" />
+      <Button layoutX="328.0" layoutY="426.0" mnemonicParsing="false" text="Signup" />
+      <Button layoutX="426.0" layoutY="426.0" mnemonicParsing="false" text="Cancel" />
+      <TextField layoutX="141.0" layoutY="243.0" text="Password" />
+      <TextField layoutX="435.0" layoutY="243.0" text="Retype Password" />
+      <ChoiceBox layoutX="313.0" layoutY="317.0" prefWidth="150.0" />
+   </children>
+</AnchorPane>
