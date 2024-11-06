@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="445.0" prefWidth="641.0" style="-fx-background-color: #f7e9e9;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.LogIn">
+<AnchorPane prefHeight="445.0" prefWidth="641.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.LogIn">
    <children>
       <Label alignment="CENTER" layoutX="256.0" layoutY="34.0" prefHeight="45.0" prefWidth="105.0" style="-fx-background-color: #f7e0df;" text="login ">
          <font>
@@ -15,7 +15,7 @@
       </Label>
       <TextField layoutX="215.0" layoutY="126.0" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" text="Email" />
       <TextField layoutX="215.0" layoutY="199.0" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" text="Password" />
-      <Button fx:id="loginOnClick" layoutX="215.0" layoutY="293.0" mnemonicParsing="false" onAction="#goToMainPage" style="-fx-background-color: #4CAF50;" text="Log In" />
-      <Button fx:id="SignupPage" layoutX="370.0" layoutY="293.0" mnemonicParsing="false" onAction="#openSignupPage" style="-fx-background-color: #fa4339;" text="Sign Up" />
+      <Button fx:id="loginOnClick" layoutX="215.0" layoutY="293.0" mnemonicParsing="false" onAction="#goToMainPage" style="-fx-background-color: #3079c2;" text="Log In" />
+      <Button fx:id="SignupPage" layoutX="370.0" layoutY="293.0" mnemonicParsing="false" onAction="#openSignupPage" style="-fx-background-color: #3079c2;" text="Sign Up" />
    </children>
 </AnchorPane>
