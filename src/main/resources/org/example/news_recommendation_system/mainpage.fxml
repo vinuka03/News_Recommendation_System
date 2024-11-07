@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.MainPageController">
+
+    <!-- Header -->
+    <HBox layoutX="0" layoutY="0" prefHeight="50" prefWidth="800" style="-fx-background-color: #336699;">
+        <children>
+            <Label layoutX="20.0" layoutY="10.0" prefHeight="49.0" prefWidth="722.0" style="-fx-text-fill: white; -fx-font-size: 25;" text=" News Recommendation System" />
+            <Button fx:id="logoutButton" onAction="#logOutOnAction" prefHeight="31.0" prefWidth="82.0" style="-fx-background-color: #ffffff;" text="Logout" />
+        </children>
+    </HBox>
+
+    <!-- Sidebar / Navigation Menu -->
+    <VBox layoutX="0" layoutY="50" prefHeight="450" prefWidth="175.0" style="-fx-background-color: #2e4d75;">
+        <children>
+            <Button fx:id="homeButton" onAction="#showHomePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Home" />
+            <Button fx:id="recommendedButton" onAction="#showRecommendedPane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Recommended Articles" />
+            <Button fx:id="categoriesButton" onAction="#showCategoriesPane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Categories" />
+            <Button fx:id="profileButton" onAction="#showProfilePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Profile" />
+            <Button fx:id="rateButton" onAction="#showRatePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Rate" />
+        </children>
+    </VBox>
+
+          <!-- Main Content Area with StackPane -->
+    <StackPane fx:id="contentStackPane" layoutX="150" layoutY="50" prefHeight="450" prefWidth="650" style="-fx-background-color: #ffffff;">
+        <!-- Content will be dynamically loaded here -->
+    </StackPane>
+</AnchorPane>
