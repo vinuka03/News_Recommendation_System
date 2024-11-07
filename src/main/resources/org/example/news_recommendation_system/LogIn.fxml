@@ -13,8 +13,8 @@
             <Font size="30.0" />
          </font>
       </Label>
-      <TextField layoutX="215.0" layoutY="126.0" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" text="Email" />
-      <TextField layoutX="215.0" layoutY="199.0" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" text="Password" />
+      <TextField fx:id="txtUserName" layoutX="215.0" layoutY="126.0" promptText="user name" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" />
+      <TextField fx:id="txtPassword" layoutX="215.0" layoutY="199.0" promptText="Password" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" />
       <Button fx:id="loginOnClick" layoutX="215.0" layoutY="293.0" mnemonicParsing="false" onAction="#goToMainPage" style="-fx-background-color: #3079c2;" text="Log In" />
       <Button fx:id="SignupPage" layoutX="370.0" layoutY="293.0" mnemonicParsing="false" onAction="#openSignupPage" style="-fx-background-color: #3079c2;" text="Sign Up" />
    </children>

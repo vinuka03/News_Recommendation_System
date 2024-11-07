@@ -1,6 +1,9 @@
 module org.example.news_recommendation_system {
     requires javafx.controls;
     requires javafx.fxml;
+    requires org.mongodb.driver.core;
+    requires org.mongodb.driver.sync.client;
+    requires org.mongodb.bson;
 
 
     opens org.example.news_recommendation_system to javafx.fxml;
