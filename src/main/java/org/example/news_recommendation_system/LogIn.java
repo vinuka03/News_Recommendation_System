@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -26,6 +27,8 @@ public class LogIn implements Initializable {
     public Button loginOnClick;
     @FXML
     public Button SignupPage;
+    public Button adminLgbtn;
+
 
     @FXML
     private TextField txtUserName;
@@ -99,6 +102,26 @@ public class LogIn implements Initializable {
             currentStage.close();
 
     }
+
+
+
+    public void goToAdminLogin(ActionEvent event) throws IOException {
+        // Load the Admin Login page FXML
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AdminLogin.fxml"));
+        Parent adminLoginRoot = fxmlLoader.load();
+
+        // Create a new stage for the Admin Login page
+        Stage adminLoginStage = new Stage();
+        adminLoginStage.setTitle("Admin Login Page");
+        adminLoginStage.setScene(new Scene(adminLoginRoot));
+
+        // Show the Admin Login page
+        adminLoginStage.show();
+
+        // Close the current (User Login) stage
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        currentStage.close();
+    }
     // Method to open the main page after a successful login
     @FXML
     private void goToMainPage(ActionEvent event) throws IOException {
@@ -127,6 +150,7 @@ public class LogIn implements Initializable {
 
 
     }
+
 
 
 }
