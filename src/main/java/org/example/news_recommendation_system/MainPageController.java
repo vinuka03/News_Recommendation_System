@@ -7,63 +7,81 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class MainPageController {
 
-    public Button homeButton;
-    public Button recommendedButton;
-    public Button categoriesButton;
-    public Button profileButton;
 
-    public Button rateButton;
+    // Sidebar Buttons
     @FXML
-    private StackPane contentStackPane;
+    private Button homeButton;
+    @FXML
+    private Button recommendedButton;
+    @FXML
+    private Button categoriesButton;
+    @FXML
+    private Button profileButton;
+    @FXML
+    private Button rateButton;
     @FXML
     private Button logoutButton;
 
+    // Content Panes
     @FXML
-    private void showHomePane(ActionEvent event) throws IOException {
-        loadPane("Home.fxml");
+    private VBox homePane;
+    @FXML
+    private VBox recommendedPane;
+    @FXML
+    private VBox categoriesPane;
+    @FXML
+    private VBox profilePane;
+    @FXML
+    private VBox ratePane;
+
+    // Method to display only the selected pane
+    private void showPane(VBox pane) {
+        // Hide all panes initially
+        homePane.setVisible(false);
+        recommendedPane.setVisible(false);
+        categoriesPane.setVisible(false);
+        profilePane.setVisible(false);
+        ratePane.setVisible(false);
+
+        // Show the selected pane
+        pane.setVisible(true);
     }
 
     @FXML
-    private void showRecommendedPane(ActionEvent event) throws IOException {
-        loadPane("Recommended.fxml");
+    private void showHomePane(ActionEvent event) {
+        showPane(homePane);
     }
 
     @FXML
-    private void showCategoriesPane(ActionEvent event) throws IOException {
-        loadPane("Categories.fxml");
+    private void showRecommendedPane(ActionEvent event) {
+        showPane(recommendedPane);
     }
 
     @FXML
-    private void showProfilePane(ActionEvent event) throws IOException {
-        loadPane("Profile.fxml");
+    private void showCategoriesPane(ActionEvent event) {
+        showPane(categoriesPane);
     }
 
     @FXML
-    private void showRatePane(ActionEvent event) throws IOException {
-        loadPane("Rate.fxml");
+    private void showProfilePane(ActionEvent event) {
+        showPane(profilePane);
     }
 
-    private void loadPane(String fxmlFile) throws IOException {
-        // Clear any existing content in the StackPane
-        contentStackPane.getChildren().clear();
-
-        // Load the specified FXML file
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlFile));
-        Parent pane = fxmlLoader.load();
-
-        // Add the loaded pane to the StackPane
-        contentStackPane.getChildren().add(pane);
+    @FXML
+    private void showRatePane(ActionEvent event) {
+        showPane(ratePane);
     }
 
     @FXML
     private void logOutOnAction(ActionEvent event) throws IOException {
-        // Load the login page FXML
+        // Load the login page FXML and switch scenes to log out
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml"));
         Parent loginRoot = fxmlLoader.load();
 
@@ -77,8 +95,4 @@ public class MainPageController {
         Stage currentStage = (Stage) logoutButton.getScene().getWindow();
         currentStage.close();
     }
-
-
-
 }
-

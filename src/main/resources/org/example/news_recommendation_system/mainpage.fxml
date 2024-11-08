@@ -28,8 +28,38 @@
         </children>
     </VBox>
 
-          <!-- Main Content Area with StackPane -->
+    <!-- Main Content Area with StackPane -->
     <StackPane fx:id="contentStackPane" layoutX="150" layoutY="50" prefHeight="450" prefWidth="650" style="-fx-background-color: #ffffff;">
-        <!-- Content will be dynamically loaded here -->
+
+        <!-- Home Pane -->
+        <VBox fx:id="homePane" visible="false">
+            <Label text="Welcome to the Home Page" style="-fx-font-size: 20;" />
+            <!-- Additional home pane content here -->
+        </VBox>
+
+        <!-- Recommended Pane -->
+        <VBox fx:id="recommendedPane" visible="false">
+            <Label text="Recommended Articles" style="-fx-font-size: 20;" />
+            <!-- Additional recommended pane content here -->
+        </VBox>
+
+        <!-- Categories Pane -->
+        <VBox fx:id="categoriesPane" visible="false">
+            <Label text="Categories" style="-fx-font-size: 20;" />
+            <!-- Additional categories pane content here -->
+        </VBox>
+
+        <!-- Profile Pane -->
+        <VBox fx:id="profilePane" visible="false">
+            <Label text="Your Profile" style="-fx-font-size: 20;" />
+            <!-- Additional profile pane content here -->
+        </VBox>
+
+        <!-- Rate Pane -->
+        <VBox fx:id="ratePane" visible="false">
+            <Label text="Rate Articles" style="-fx-font-size: 20;" />
+            <!-- Additional rate pane content here -->
+        </VBox>
+
     </StackPane>
 </AnchorPane>
