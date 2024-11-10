@@ -2,29 +2,60 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.MainPageController">
 
     <!-- Header -->
     <HBox layoutX="0" layoutY="0" prefHeight="50" prefWidth="800" style="-fx-background-color: #336699;">
         <children>
-            <Label layoutX="20.0" layoutY="10.0" prefHeight="49.0" prefWidth="722.0" style="-fx-text-fill: white; -fx-font-size: 25;" text=" News Recommendation System" />
-            <Button fx:id="logoutButton" onAction="#logOutOnAction" prefHeight="31.0" prefWidth="82.0" style="-fx-background-color: #ffffff;" text="Logout" />
+            <Label layoutX="20.0" layoutY="10.0" prefHeight="49.0" prefWidth="722.0" text="  News Recommendation System" textAlignment="CENTER">
+            <font>
+               <Font name="Algerian" size="30.0" />
+            </font></Label>
+            <Button fx:id="logoutButton" onAction="#logOutOnAction" prefHeight="31.0" prefWidth="82.0" style="-fx-background-color: #4aa1f7;" text="Logout">
+            <effect>
+               <DropShadow>
+                  <input>
+                     <Blend />
+                  </input>
+               </DropShadow>
+            </effect>
+            <font>
+               <Font name="Algerian" size="15.0" />
+            </font></Button>
         </children>
     </HBox>
 
     <!-- Sidebar / Navigation Menu -->
-    <VBox layoutX="0" layoutY="50" prefHeight="450" prefWidth="175.0" style="-fx-background-color: #2e4d75;">
+    <VBox layoutX="0" layoutY="50" prefHeight="450" prefWidth="182.0" style="-fx-background-color: #4aa1f7;">
         <children>
-            <Button fx:id="homeButton" onAction="#showHomePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Home" />
-            <Button fx:id="recommendedButton" onAction="#showRecommendedPane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Recommended Articles" />
-            <Button fx:id="categoriesButton" onAction="#showCategoriesPane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Categories" />
-            <Button fx:id="profileButton" onAction="#showProfilePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Profile" />
-            <Button fx:id="rateButton" onAction="#showRatePane" prefHeight="57.0" prefWidth="175.0" style="-fx-text-fill: #0c5094;" text="Rate" />
+            <Button fx:id="homeButton" onAction="#showHomePane" prefHeight="57.0" prefWidth="191.0" style="-fx-text-fill: #0c5094;" text="Home">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Button>
+            <Button fx:id="recommendedButton" onAction="#showRecommendedPane" prefHeight="57.0" prefWidth="193.0" style="-fx-text-fill: #0c5094;" text="Recommendations">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Button>
+            <Button fx:id="categoriesButton" onAction="#showCategoriesPane" prefHeight="57.0" prefWidth="189.0" style="-fx-text-fill: #0c5094;" text="Categories">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Button>
+            <Button fx:id="profileButton" onAction="#showProfilePane" prefHeight="57.0" prefWidth="183.0" style="-fx-text-fill: #0c5094;" text="Profile">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Button>
+            <Button fx:id="rateButton" onAction="#showRatePane" prefHeight="57.0" prefWidth="186.0" style="-fx-text-fill: #0c5094;" text="Rate">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Button>
         </children>
     </VBox>
 
@@ -33,31 +64,31 @@
 
         <!-- Home Pane -->
         <VBox fx:id="homePane" visible="false">
-            <Label text="Welcome to the Home Page" style="-fx-font-size: 20;" />
+            <Label style="-fx-font-size: 20;" text="Welcome to the Home Page" />
             <!-- Additional home pane content here -->
         </VBox>
 
         <!-- Recommended Pane -->
         <VBox fx:id="recommendedPane" visible="false">
-            <Label text="Recommended Articles" style="-fx-font-size: 20;" />
+            <Label style="-fx-font-size: 20;" text="Recommended Articles" />
             <!-- Additional recommended pane content here -->
         </VBox>
 
         <!-- Categories Pane -->
         <VBox fx:id="categoriesPane" visible="false">
-            <Label text="Categories" style="-fx-font-size: 20;" />
+            <Label style="-fx-font-size: 20;" text="Categories" />
             <!-- Additional categories pane content here -->
         </VBox>
 
         <!-- Profile Pane -->
         <VBox fx:id="profilePane" visible="false">
-            <Label text="Your Profile" style="-fx-font-size: 20;" />
+            <Label style="-fx-font-size: 20;" text="Your Profile" />
             <!-- Additional profile pane content here -->
         </VBox>
 
         <!-- Rate Pane -->
         <VBox fx:id="ratePane" visible="false">
-            <Label text="Rate Articles" style="-fx-font-size: 20;" />
+            <Label style="-fx-font-size: 20;" text="Rate Articles" />
             <!-- Additional rate pane content here -->
         </VBox>
 
