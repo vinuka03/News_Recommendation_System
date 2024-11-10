@@ -12,10 +12,10 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="502.0" prefWidth="776.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.Signup">
    <children>
-      <TextField layoutX="93.0" layoutY="176.0" promptText="First Name" />
-      <TextField layoutX="314.0" layoutY="176.0" promptText="Last Name" />
-      <TextField layoutX="544.0" layoutY="176.0" promptText="Email" />
-      <Button fx:id="signup" layoutX="295.0" layoutY="426.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="72.0" style="-fx-background-color: #3079c2;" text="Signup">
+      <TextField fx:id="firstNameField" layoutX="93.0" layoutY="176.0" promptText="First Name" />
+      <TextField fx:id="lastNameField" layoutX="314.0" layoutY="176.0" promptText="Last Name" />
+      <TextField fx:id="emailField" layoutX="544.0" layoutY="176.0" promptText="Email" />
+      <Button fx:id="signup" layoutX="295.0" layoutY="426.0" mnemonicParsing="false" onAction="#signUpOnAction" prefHeight="31.0" prefWidth="72.0" style="-fx-background-color: #3079c2;" text="Signup">
          <effect>
             <DropShadow>
                <input>
@@ -31,19 +31,21 @@
                </input>
             </DropShadow>
          </effect></Button>
-      <TextField layoutX="141.0" layoutY="243.0" promptText="Password" />
-      <TextField layoutX="435.0" layoutY="243.0" promptText="Retype Password" />
+      <TextField fx:id="passwordField" layoutX="314.0" layoutY="243.0" promptText="Password" />
+      <TextField fx:id="retypePasswordField" layoutX="544.0" layoutY="243.0" promptText="Retype Password" />
+      <TextField fx:id="usernameField" layoutX="94.0" layoutY="243.0" promptText="Username" />
+
       <Label layoutX="-3.0" prefHeight="106.0" prefWidth="776.0" style="-fx-background-color: lightblue;" text="                              ">
          <font>
             <Font size="35.0" />
          </font>
       </Label>
-      <CheckBox layoutX="49.0" layoutY="321.0" mnemonicParsing="false" text="Technology" />
-      <CheckBox layoutX="187.0" layoutY="321.0" mnemonicParsing="false" text="Sports" />
-      <CheckBox layoutX="302.0" layoutY="321.0" mnemonicParsing="false" text="Health" />
-      <CheckBox layoutX="413.0" layoutY="321.0" mnemonicParsing="false" text="AI" />
-      <CheckBox layoutX="491.0" layoutY="321.0" mnemonicParsing="false" text="Political" />
-      <CheckBox layoutX="616.0" layoutY="321.0" mnemonicParsing="false" text="Religious" />
+      <CheckBox fx:id="techCheckbox" layoutX="49.0" layoutY="321.0" mnemonicParsing="false" text="Technology" />
+      <CheckBox fx:id="sportsCheckbox" layoutX="187.0" layoutY="321.0" mnemonicParsing="false" text="Sports" />
+      <CheckBox fx:id="healthCheckbox" layoutX="302.0" layoutY="321.0" mnemonicParsing="false" text="Health" />
+      <CheckBox fx:id="aiCheckbox" layoutX="413.0" layoutY="321.0" mnemonicParsing="false" text="AI" />
+      <CheckBox fx:id="politicalCheckbox" layoutX="491.0" layoutY="321.0" mnemonicParsing="false" text="Political" />
+      <CheckBox fx:id="religiousCheckbox" layoutX="616.0" layoutY="321.0" mnemonicParsing="false" text="Religious" />
       <Text layoutX="328.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Sign Up" wrappingWidth="144.99998849630356">
          <font>
             <Font name="Algerian" size="30.0" />
