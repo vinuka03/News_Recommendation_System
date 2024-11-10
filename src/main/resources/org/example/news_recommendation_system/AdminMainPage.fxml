@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.AdminPageController">
+
+    <!-- Header -->
+    <HBox layoutX="0" layoutY="0" prefHeight="50" prefWidth="800" style="-fx-background-color: #336699;">
+        <children>
+            <Label layoutX="20.0" layoutY="10.0" prefHeight="49.0" prefWidth="722.0" text="                                ADMIN DASHBOARD" textAlignment="CENTER">
+                <font>
+                    <Font name="Algerian" size="30.0" />
+                </font>
+            </Label>
+            <Button fx:id="logoutButton" onAction="#logOutOnAction" prefHeight="31.0" prefWidth="82.0" style="-fx-background-color: #4aa1f7;" text="Logout">
+                <effect>
+                    <DropShadow />
+                </effect>
+                <font>
+                    <Font name="Algerian" size="15.0" />
+                </font>
+            </Button>
+        </children>
+    </HBox>
+
+    <!-- Sidebar / Admin Navigation Menu -->
+    <VBox layoutX="0" layoutY="50" prefHeight="450" prefWidth="200.0" style="-fx-background-color: #4aa1f7;">
+        <children>
+            <!-- Admin Tools Section -->
+            <Label style="-fx-text-fill: white; -fx-font-size: 15; -fx-padding: 10;" text="Admin Tools" />
+
+            <Button fx:id="addArticleButton" onAction="#showAddArticlePane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Add Article">
+                <font>
+                    <Font name="System Bold" size="15.0" />
+                </font>
+            </Button>
+            <Button fx:id="deleteArticleButton" onAction="#showDeleteArticlePane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Delete Article">
+                <font>
+                    <Font name="System Bold" size="15.0" />
+                </font>
+            </Button>
+            <Button fx:id="deleteUserButton" onAction="#showDeleteUserPane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Delete User">
+                <font>
+                    <Font name="System Bold" size="15.0" />
+                </font>
+            </Button>
+            <Button fx:id="updateCategoryButton" onAction="#showUpdateCategoryPane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Update Categories">
+                <font>
+                    <Font name="System Bold" size="15.0" />
+                </font>
+            </Button>
+        </children>
+    </VBox>
+
+    <!-- Main Content Area with StackPane -->
+    <StackPane fx:id="adminContentStackPane" layoutX="220.0" layoutY="50.0" prefHeight="450" prefWidth="579.0" style="-fx-background-color: #ffffff;">
+
+        <!-- Add Article Pane -->
+        <VBox fx:id="addArticlePane" visible="false">
+            <Label style="-fx-font-size: 20;" text="Add New Article" />
+            <!-- Add article form elements here -->
+        </VBox>
+
+        <!-- Delete Article Pane -->
+        <VBox fx:id="deleteArticlePane" visible="false">
+            <Label style="-fx-font-size: 20;" text="Delete Articles" />
+            <!-- Delete article elements here -->
+        </VBox>
+
+        <!-- Delete User Pane -->
+        <VBox fx:id="deleteUserPane" visible="false">
+            <Label style="-fx-font-size: 20;" text="Delete Users" />
+            <!-- Delete user elements here -->
+        </VBox>
+
+        <!-- Update Categories Pane -->
+        <VBox fx:id="updateCategoryPane" visible="false">
+            <Label style="-fx-font-size: 20;" text="Update Categories" />
+            <!-- Update categories form elements here -->
+        </VBox>
+
+    </StackPane>
+</AnchorPane>
