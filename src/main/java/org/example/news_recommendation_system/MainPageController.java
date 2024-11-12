@@ -6,15 +6,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class MainPageController {
 
-
+    public StackPane contentStackPane;
     // Sidebar Buttons
     @FXML
     private Button homeButton;
@@ -31,18 +31,18 @@ public class MainPageController {
 
     // Content Panes
     @FXML
-    private VBox homePane;
+    private Pane homePane;
     @FXML
-    private VBox recommendedPane;
+    private Pane recommendedPane;
     @FXML
-    private VBox categoriesPane;
+    private Pane categoriesPane;
     @FXML
-    private VBox profilePane;
+    private Pane profilePane;
     @FXML
-    private VBox ratePane;
+    private Pane ratePane;
 
     // Method to display only the selected pane
-    private void showPane(VBox pane) {
+    private void showPane(Pane pane) {
         // Hide all panes initially
         homePane.setVisible(false);
         recommendedPane.setVisible(false);
@@ -52,6 +52,11 @@ public class MainPageController {
 
         // Show the selected pane
         pane.setVisible(true);
+    }
+
+    @FXML
+    public void initialize() {
+        showPane(homePane); // Display home pane by default
     }
 
     @FXML

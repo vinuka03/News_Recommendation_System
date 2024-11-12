@@ -6,8 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -15,34 +15,39 @@ import java.io.IOException;
 
 public class AdminPageController {
 
-    public Button updateCategoryButton;
-    public Button deleteUserButton;
-    public Button deleteArticleButton;
-    public Button addArticleButton;
     @FXML
-    private VBox homePane;
+    private Button updateCategoryButton;
     @FXML
-    private VBox addArticlePane;
+    private Button deleteUserButton;
     @FXML
-    private VBox deleteArticlePane;
+    private Button deleteArticleButton;
     @FXML
-    private VBox deleteUserPane;
+    private Button addArticleButton;
+
     @FXML
-    private VBox updateCategoryPane;
+    private Pane homePane;
+    @FXML
+    private Pane addArticlePane;
+    @FXML
+    private Pane deleteArticlePane;
+    @FXML
+    private Pane deleteUserPane;
+    @FXML
+    private Pane updateCategoryPane;
     @FXML
     private StackPane adminContentStackPane;
 
     @FXML
     private Button logoutButton;
 
-
     // Initialize method (optional, useful if you want to set default pane visibility)
-
-
     @FXML
-    private void showHomePane() {
-        setPaneVisibility(homePane);
+    public void initialize() {
+        // Set the homePane as the default visible pane
+        setPaneVisibility(addArticlePane);
     }
+
+
 
     @FXML
     private void showAddArticlePane() {
@@ -65,14 +70,17 @@ public class AdminPageController {
     }
 
     // Helper method to show only one pane at a time
+    private void setPaneVisibility(Pane paneToShow) {
+        // Set all panes to invisible
 
-    private void setPaneVisibility(VBox paneToShow) {
-        addArticlePane.setVisible(paneToShow == addArticlePane);
-        deleteArticlePane.setVisible(paneToShow == deleteArticlePane);
-        deleteUserPane.setVisible(paneToShow == deleteUserPane);
-        updateCategoryPane.setVisible(paneToShow == updateCategoryPane);
+        addArticlePane.setVisible(false);
+        deleteArticlePane.setVisible(false);
+        deleteUserPane.setVisible(false);
+        updateCategoryPane.setVisible(false);
+
+        // Set the chosen pane to visible
+        paneToShow.setVisible(true);
     }
-
 
     @FXML
     private void logOutOnAction(ActionEvent event) throws IOException {

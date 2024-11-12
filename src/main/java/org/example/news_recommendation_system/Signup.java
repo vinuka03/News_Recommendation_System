@@ -80,6 +80,21 @@ public class Signup {
             return;
         }
 
+
+        String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (!email.matches(emailPattern)) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", "Please enter a valid email address.");
+            return;
+        }
+
+
+        // Check if password meets minimum length
+        if (password.length() < 8) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", "Password must be at least 8 characters long.");
+            return;
+        }
+
+
         if (!password.equals(retypePassword)) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Passwords do not match.");
             return;
@@ -105,6 +120,13 @@ public class Signup {
         if (aiCheckbox.isSelected()) categories.add("AI");
         if (politicalCheckbox.isSelected()) categories.add("Political");
         if (religiousCheckbox.isSelected()) categories.add("Religious");
+
+
+        //atleast two categories are selected
+        if (categories.size() < 2) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", "Please select at least two categories.");
+            return;
+        }
 
         Document newUser = new Document("firstName", firstName)
                 .append("lastName", lastName)
