@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
@@ -72,6 +73,14 @@
     <!-- Main Content Area with StackPane -->
     <StackPane fx:id="contentStackPane" layoutX="191.0" layoutY="50.0" prefHeight="500.0" prefWidth="607.0" style="-fx-background-color: #ffffff;">
 
+        <!-- Recommended Pane -->
+        <Pane fx:id="recommendedPane" visible="false">
+            <children>
+                <Label style="-fx-font-size: 20;" text="Recommended Articles" />
+                <!-- Additional recommended pane content here -->
+            </children>
+        </Pane>
+
         <!-- Home Pane with Image -->
         <Pane fx:id="homePane" prefHeight="500.0" prefWidth="577.0" visible="false">
             <children>
@@ -84,14 +93,6 @@
             </children>
         </Pane>
 
-        <!-- Recommended Pane -->
-        <Pane fx:id="recommendedPane" visible="false">
-            <children>
-                <Label style="-fx-font-size: 20;" text="Recommended Articles" />
-                <!-- Additional recommended pane content here -->
-            </children>
-        </Pane>
-
         <!-- Categories Pane -->
         <Pane fx:id="categoriesPane" visible="false">
             <children>
@@ -100,19 +101,57 @@
             </children>
         </Pane>
 
-        <!-- Profile Pane -->
-        <Pane fx:id="profilePane" visible="false">
-            <children>
-                <Label style="-fx-font-size: 20;" text="Your Profile" />
-                <!-- Additional profile pane content here -->
-            </children>
-        </Pane>
-
         <!-- Rate Pane -->
         <Pane fx:id="ratePane" visible="false">
             <children>
                 <Label style="-fx-font-size: 20;" text="Rate Articles" />
                 <!-- Additional rate pane content here -->
+            </children>
+        </Pane>
+
+        <!-- Profile Pane -->
+        <Pane fx:id="profilePane" visible="false">
+            <children>
+                <ImageView fx:id="profileImageView" fitHeight="159.0" fitWidth="204.0" layoutX="192.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@images/profileImage.jpg" />
+                    </image>
+                </ImageView>
+                <Label layoutX="18.0" layoutY="205.0" text="Username:">
+               <font>
+                  <Font name="Algerian" size="15.0" />
+               </font></Label>
+                <TextField fx:id="profileUsername" editable="false" layoutX="117.0" layoutY="199.0" style="-fx-background-color: #4aa1f7;" />
+
+                <Label layoutX="343.0" layoutY="205.0" text="Email:">
+               <font>
+                  <Font name="Algerian" size="15.0" />
+               </font></Label>
+                <TextField fx:id="profileEmail" layoutX="406.0" layoutY="199.0" style="-fx-background-color: #4aa1f7;" />
+
+                <Label layoutX="14.0" layoutY="284.0" text="First Name:">
+               <font>
+                  <Font name="Algerian" size="15.0" />
+               </font></Label>
+                <TextField fx:id="profileFirstName" layoutX="117.0" layoutY="269.0" style="-fx-background-color: #4aa1f7;" />
+
+                <Label layoutX="315.0" layoutY="276.0" text="Last Name:">
+               <font>
+                  <Font name="Algerian" size="15.0" />
+               </font></Label>
+                <TextField fx:id="profileLastName" layoutX="406.0" layoutY="269.0" style="-fx-background-color: #4aa1f7;" />
+
+                <Label layoutX="117.0" layoutY="347.0" text="Password:">
+               <font>
+                  <Font name="Algerian" size="15.0" />
+               </font></Label>
+                <TextField fx:id="profilePassword" layoutX="222.0" layoutY="341.0" style="-fx-background-color: #4aa1f7;" />
+
+                <Button fx:id="updateProfileButton" layoutX="292.0" layoutY="422.0" onAction="#updateProfile" style="-fx-background-color: #4aa1f7;" text="Update">
+               <effect>
+                  <DropShadow />
+               </effect></Button>
+
             </children>
         </Pane>
 

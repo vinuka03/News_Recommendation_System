@@ -132,8 +132,13 @@ public class LogIn implements Initializable {
             saveLoginDetails(username);
             showAlert(Alert.AlertType.INFORMATION, "Login", "Welcome " + username);
 
+            // Load the main page FXML
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("mainpage.fxml"));
             Parent mainPageRoot = fxmlLoader.load();
+
+            // Get the controller and initialize it with user data
+            MainPageController mainPageController = fxmlLoader.getController();
+            mainPageController.initializeWithData(userDetailsCollection, username);
 
             // Create and show a new stage for the main page
             Stage mainStage = new Stage();
@@ -149,7 +154,9 @@ public class LogIn implements Initializable {
         }
 
 
-    }
+
+
+}
 
 
 
