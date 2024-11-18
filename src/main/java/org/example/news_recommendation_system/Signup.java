@@ -5,22 +5,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import com.mongodb.client.*;
 import org.bson.Document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 public class Signup {
+
     @FXML
     public Button signup;
     @FXML
@@ -80,20 +78,17 @@ public class Signup {
             return;
         }
 
-
         String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         if (!email.matches(emailPattern)) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Please enter a valid email address.");
             return;
         }
 
-
         // Check if password meets minimum length
         if (password.length() < 8) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Password must be at least 8 characters long.");
             return;
         }
-
 
         if (!password.equals(retypePassword)) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Passwords do not match.");
@@ -121,19 +116,20 @@ public class Signup {
         if (politicalCheckbox.isSelected()) categories.add("Political");
         if (religiousCheckbox.isSelected()) categories.add("Religious");
 
-
-        //atleast two categories are selected
+        // At least two categories are selected
         if (categories.size() < 2) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Please select at least two categories.");
             return;
         }
 
+        // Assign role as 'user' for normal users
         Document newUser = new Document("firstName", firstName)
                 .append("lastName", lastName)
                 .append("email", email)
                 .append("username", username)
                 .append("password", password)
-                .append("categories", categories);
+                .append("categories", categories)
+                .append("role", "user"); // Assign 'user' role
 
         try {
             userDetailsCollection.insertOne(newUser);
@@ -153,10 +149,6 @@ public class Signup {
         alert.showAndWait();
     }
 
-
-
-
-
     @FXML
     private void goBackToLogIN(ActionEvent event) throws IOException {
         // Load the LogIn.fxml file (assuming it is the login page)
@@ -175,7 +167,6 @@ public class Signup {
         Stage currentStage = (Stage) goBackLogin.getScene().getWindow();
         currentStage.close();
     }
-
 
     private void clearFields() {
         firstNameField.clear();
