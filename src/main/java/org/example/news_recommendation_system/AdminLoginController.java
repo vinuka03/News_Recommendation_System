@@ -1,9 +1,6 @@
 package org.example.news_recommendation_system;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,30 +17,26 @@ import java.io.IOException;
 
 public class AdminLoginController {
 
-
     @FXML
     public Button backtouser;
     @FXML
     public TextField txtUserNameAdmin;
     @FXML
     public TextField txtPasswordAdmin;
+    @FXML
     public Button adminLginBtn;
-    private MongoClient mongoClient;
-    private MongoDatabase database;
+
     private MongoCollection<Document> userDetailsCollection;
 
+    // Initialize MongoDB collection via DatabaseHandler
     public void initialize() {
         try {
-            mongoClient = MongoClients.create("mongodb://localhost:27017");
-            database = mongoClient.getDatabase("News_Recommendation");
-            userDetailsCollection = database.getCollection("User_Details");
+            userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");
         }
     }
-
-
 
     @FXML
     public void goBackToUserLogin(ActionEvent event) throws IOException {
@@ -74,14 +67,15 @@ public class AdminLoginController {
             return;
         }
 
-        // Check if the username and password match an admin in the database
+        // Validate admin credentials
         Document admin = userDetailsCollection.find(new Document("userName", username)
                 .append("password", password)
                 .append("role", "admin")).first();
 
         if (admin != null) {
             showAlert(Alert.AlertType.INFORMATION, "Welcome", "Welcome Admin!");
-            // Admin found, proceed to Admin Main Page
+
+            // Load the Admin Main Page FXML
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AdminMainPage.fxml"));
             Parent adminMainPageRoot = fxmlLoader.load();
 
@@ -92,10 +86,9 @@ public class AdminLoginController {
             adminMainPageStage.show();
 
             // Close the current admin login stage
-            Stage currentStage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.close();
         } else {
-            // Invalid admin credentials
             showAlert(Alert.AlertType.ERROR, "Login Error", "Invalid username or password, or you are not an admin.");
         }
     }
@@ -108,5 +101,4 @@ public class AdminLoginController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }

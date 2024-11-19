@@ -44,10 +44,8 @@ public class LogIn implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            mongoClient = MongoClients.create("mongodb://localhost:27017");
-            database = mongoClient.getDatabase("News_Recommendation");
-            userDetailsCollection = database.getCollection("User_Details");
-            userLoginDetailsCollection = database.getCollection("User_Login");
+            userDetailsCollection = DatabaseHandler.getCollection("User_Details");
+            userLoginDetailsCollection = DatabaseHandler.getCollection("User_Login");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");
@@ -123,6 +121,7 @@ public class LogIn implements Initializable {
         currentStage.close();
     }
     // Method to open the main page after a successful login
+
     @FXML
     private void goToMainPage(ActionEvent event) throws IOException {
         String username = txtUserName.getText();
@@ -136,9 +135,9 @@ public class LogIn implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("mainpage.fxml"));
             Parent mainPageRoot = fxmlLoader.load();
 
-            // Get the controller and initialize it with user data
+            // Get the controller and initialize it with the username
             MainPageController mainPageController = fxmlLoader.getController();
-            mainPageController.initializeWithData(userDetailsCollection, username);
+            mainPageController.initializeWithData(username);
 
             // Create and show a new stage for the main page
             Stage mainStage = new Stage();
@@ -152,11 +151,8 @@ public class LogIn implements Initializable {
         } else {
             showAlert(Alert.AlertType.ERROR, "Login", "Incorrect username or password");
         }
+    }
 
-
-
-
-}
 
 
 

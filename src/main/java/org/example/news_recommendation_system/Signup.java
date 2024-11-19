@@ -54,9 +54,7 @@ public class Signup {
 
     public void initialize() {
         try {
-            mongoClient = MongoClients.create("mongodb://localhost:27017");
-            database = mongoClient.getDatabase("News_Recommendation");
-            userDetailsCollection = database.getCollection("User_Details");
+            userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");

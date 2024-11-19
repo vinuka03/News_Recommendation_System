@@ -49,8 +49,8 @@ public class MainPageController {
     private String currentUsername;
 
     // Method to initialize the controller with MongoDB and user data
-    public void initializeWithData(MongoCollection<Document> userDetailsCollection, String username) {
-        this.userDetailsCollection = userDetailsCollection;
+    public void initializeWithData(String username) {
+        this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         this.currentUsername = username;
     }
 
