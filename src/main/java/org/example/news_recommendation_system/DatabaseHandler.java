@@ -3,6 +3,8 @@ package org.example.news_recommendation_system;
 import com.mongodb.client.*;
 import org.bson.Document;
 
+import java.util.List;
+
 public class DatabaseHandler {
     private static final String CONNECTION_STRING = "mongodb://localhost:27017";
     private static final String DATABASE_NAME = "News_Recommendation";
@@ -26,6 +28,24 @@ public class DatabaseHandler {
 
     public static MongoCollection<Document> getCollection(String collectionName) {
         return getDatabase().getCollection(collectionName);
+    }
+
+
+    // Insert a list of articles into the MongoDB collection
+    public static void saveArticlesToDatabase(List<Article> articles) {
+        MongoCollection<Document> collection = getCollection("news_articles");
+
+        for (Article article : articles) {
+            Document doc = new Document("title", article.getTitle())
+                    .append("description", article.getDescription())
+                    .append("content", article.getContent())
+                    .append("author", article.getAuthor())
+                    .append("url", article.getUrl())
+                    .append("publishedAt", article.getPublishedAt())
+                    .append("source", article.getSource());
+
+            collection.insertOne(doc);
+        }
     }
 
     public static void closeConnection() {
