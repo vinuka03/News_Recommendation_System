@@ -1,22 +1,35 @@
 package org.example.news_recommendation_system;
 
-import com.mongodb.client.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClients;
+import com.mongodb.ConnectionString;
 import org.bson.Document;
 
-import java.util.List;
-
 public class DatabaseHandler {
-    private static final String CONNECTION_STRING = "mongodb://localhost:27017";
-    private static final String DATABASE_NAME = "News_Recommendation";
 
-    private static MongoClient mongoClient = null;
+    private static final String CONNECTION_STRING = "mongodb://localhost:27017";
+    private static final String DATABASE_NAME = "NEWS";  // Update with your actual database name
+
     private static MongoDatabase database = null;
 
     // Singleton pattern to ensure only one MongoDB connection
     public static MongoDatabase getDatabase() {
         if (database == null) {
             try {
-                mongoClient = MongoClients.create(CONNECTION_STRING);
+                // Create MongoDB connection string
+                ConnectionString connectionString = new ConnectionString(CONNECTION_STRING);
+
+                // Create MongoClientSettings object using the connection string
+                MongoClientSettings settings = MongoClientSettings.builder()
+                        .applyConnectionString(connectionString)
+                        .build();
+
+                // Create MongoClient using the settings
+                var mongoClient = MongoClients.create(settings);
+
+                // Get the database using the MongoClient
                 database = mongoClient.getDatabase(DATABASE_NAME);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -30,27 +43,7 @@ public class DatabaseHandler {
         return getDatabase().getCollection(collectionName);
     }
 
-
-    // Insert a list of articles into the MongoDB collection
-    public static void saveArticlesToDatabase(List<Article> articles) {
-        MongoCollection<Document> collection = getCollection("news_articles");
-
-        for (Article article : articles) {
-            Document doc = new Document("title", article.getTitle())
-                    .append("description", article.getDescription())
-                    .append("content", article.getContent())
-                    .append("author", article.getAuthor())
-                    .append("url", article.getUrl())
-                    .append("publishedAt", article.getPublishedAt())
-                    .append("source", article.getSource());
-
-            collection.insertOne(doc);
-        }
-    }
-
     public static void closeConnection() {
-        if (mongoClient != null) {
-            mongoClient.close();
-        }
+        // MongoClient.close() is not needed if using MongoClients.create() as shown above.
     }
 }

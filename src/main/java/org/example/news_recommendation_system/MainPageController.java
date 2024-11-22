@@ -22,6 +22,7 @@ public class MainPageController {
     // StackPane and profile fields
     public StackPane contentStackPane;
     public ImageView profileImageView;
+
     @FXML private TextField profileUsername;
     @FXML private TextField profileEmail;
     @FXML private TextField profileFirstName;
@@ -32,7 +33,7 @@ public class MainPageController {
     // Sidebar Buttons
     @FXML private Button homeButton;
     @FXML private Button recommendedButton;
-    @FXML private Button categoriesButton;
+    @FXML private Button ViewButton;
     @FXML private Button profileButton;
     @FXML private Button rateButton;
     @FXML private Button logoutButton;
@@ -40,7 +41,7 @@ public class MainPageController {
     // Content Panes
     @FXML private Pane homePane;
     @FXML private Pane recommendedPane;
-    @FXML private Pane categoriesPane;
+    @FXML private Pane viewPane;
     @FXML private Pane profilePane;
     @FXML private Pane ratePane;
 
@@ -63,7 +64,7 @@ public class MainPageController {
     private void showPane(Pane pane) {
         homePane.setVisible(false);
         recommendedPane.setVisible(false);
-        categoriesPane.setVisible(false);
+        viewPane.setVisible(false);
         profilePane.setVisible(false);
         ratePane.setVisible(false);
 
@@ -175,7 +176,7 @@ public class MainPageController {
     @FXML
     private void showRecommendedPane(ActionEvent event) { showPane(recommendedPane); }
     @FXML
-    private void showCategoriesPane(ActionEvent event) { showPane(categoriesPane); }
+    private void showViewPane(ActionEvent event) { showPane(viewPane); }
     @FXML
     private void showProfilePane(ActionEvent event) { showPane(profilePane); }
     @FXML
@@ -195,4 +196,6 @@ public class MainPageController {
         Stage currentStage = (Stage) logoutButton.getScene().getWindow();
         currentStage.close();
     }
+
+
 }

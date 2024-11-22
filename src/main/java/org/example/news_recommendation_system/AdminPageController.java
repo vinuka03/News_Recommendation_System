@@ -1,7 +1,7 @@
 package org.example.news_recommendation_system;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,17 +17,17 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.bson.Document;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoClient;
-
-import javafx.beans.property.SimpleObjectProperty;
 
 import java.io.IOException;
 import java.util.List;
 
 public class AdminPageController {
 
-    // TableView for displaying users
+    public Button deleteArticleButton;
+    public Button deleteUserButton;
+    public Button updateCategoryButton;
+    public Button addArticleButton;
+    // UI components
     @FXML
     private TableView<User> userTableView;
     @FXML
@@ -36,16 +36,6 @@ public class AdminPageController {
     private TableColumn<User, String> emailColumn;
     @FXML
     private TableColumn<User, Button> deleteColumn;
-
-    // Pane elements
-    @FXML
-    private Button updateCategoryButton;
-    @FXML
-    private Button deleteUserButton;
-    @FXML
-    private Button deleteArticleButton;
-    @FXML
-    private Button addArticleButton;
 
     @FXML
     private Pane homePane;
@@ -57,48 +47,55 @@ public class AdminPageController {
     private Pane deleteUserPane;
     @FXML
     private Pane updateCategoryPane;
+
     @FXML
     private StackPane adminContentStackPane;
 
     @FXML
     private Button logoutButton;
 
-    private MongoClient mongoClient;
-    private MongoDatabase database;
     private MongoCollection<Document> userDetailsCollection;
 
-    // Initialize method
+    // Initialize the Admin Page Controller
     @FXML
     public void initialize() {
+        setupDatabaseConnection();
+        setupTableColumns();
+        loadUsers();
+    }
+
+    // Setup the MongoDB connection
+    private void setupDatabaseConnection() {
         try {
-            mongoClient = MongoClients.create("mongodb://localhost:27017");
-            database = mongoClient.getDatabase("News_Recommendation");
-            userDetailsCollection = database.getCollection("User_Details");
+            userDetailsCollection = DatabaseHandler.getCollection("User_Details");
 
-            // Setup Table columns
-            usernameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
-            emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
-
-            // Set delete button on each row
-            deleteColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(createDeleteButton(cellData.getValue())));
-
-            // Load users from the database
-            loadUsers();
+            if (userDetailsCollection == null) {
+                throw new IllegalStateException("Collection 'User_Details' does not exist in the database.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");
         }
     }
 
-    // Load all users (excluding admins) from the database into the TableView
-    private void loadUsers() {
-        List<Document> users = userDetailsCollection.find(new Document("role", "user")).into(new java.util.ArrayList<>());
-        for (Document userDoc : users) {
-            String username = userDoc.getString("username");
-            String email = userDoc.getString("email");
+    // Setup TableView columns
+    private void setupTableColumns() {
+        usernameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
+        emailColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEmail()));
+        deleteColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(createDeleteButton(cellData.getValue())));
+    }
 
-            // Add user to TableView
-            userTableView.getItems().add(new User(username, email));
+    // Load users from the database
+    private void loadUsers() {
+        try {
+            List<Document> users = userDetailsCollection.find(new Document("role", "user")).into(new java.util.ArrayList<>());
+            users.forEach(userDoc -> {
+                String username = userDoc.getString("username");
+                String email = userDoc.getString("email");
+                userTableView.getItems().add(new User(username, email));
+            });
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Data Loading Error", "Unable to fetch users from the database.");
         }
     }
 
@@ -109,77 +106,72 @@ public class AdminPageController {
         return deleteButton;
     }
 
-    // Delete user from the system and update the database
+    // Delete a user from the database
     private void deleteUser(User user) {
-        // Construct a query document to find the user by username
-        Document query = new Document("username", user.getUsername()); // Adjust field name as needed
+        try {
+            Document query = new Document("username", user.getUsername());
+            long deletedCount = userDetailsCollection.deleteOne(query).getDeletedCount();
 
-        // Attempt to delete the user from the database
-        long deletedCount = userDetailsCollection.deleteOne(query).getDeletedCount();
-
-        // Check if a record was deleted
-        if (deletedCount > 0) {
-            // Remove the user from the TableView if deletion was successful
-            userTableView.getItems().remove(user);
-            showAlert(Alert.AlertType.INFORMATION, "User Deleted", "The user has been deleted successfully.");
-        } else {
-            // If no record was deleted, show an error alert
-            showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete user from the database.");
+            if (deletedCount > 0) {
+                userTableView.getItems().remove(user);
+                showAlert(Alert.AlertType.INFORMATION, "User Deleted", "The user has been deleted successfully.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete user from the database.");
+            }
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Delete Error", "An error occurred while deleting the user.");
         }
     }
 
-    // Set visibility for different admin panes
-    private void setPaneVisibility(Pane paneToShow) {
-        // Set all panes to invisible
+    // Set visibility for admin panes
+    private void showPane(Pane paneToShow) {
         addArticlePane.setVisible(false);
         deleteArticlePane.setVisible(false);
         deleteUserPane.setVisible(false);
         updateCategoryPane.setVisible(false);
 
-        // Set the chosen pane to visible
         paneToShow.setVisible(true);
     }
 
-    // Show the Add Article Pane
+    // Show Add Article Pane
     @FXML
     private void showAddArticlePane() {
-        setPaneVisibility(addArticlePane);
+        showPane(addArticlePane);
     }
 
-    // Show the Delete Article Pane
+    // Show Delete Article Pane
     @FXML
     private void showDeleteArticlePane() {
-        setPaneVisibility(deleteArticlePane);
+        showPane(deleteArticlePane);
     }
 
-    // Show the Delete User Pane
+    // Show Delete User Pane
     @FXML
     private void showDeleteUserPane() {
-        setPaneVisibility(deleteUserPane);
+        showPane(deleteUserPane);
     }
 
-    // Show the Update Category Pane
+    // Show Update Category Pane
     @FXML
     private void showUpdateCategoryPane() {
-        setPaneVisibility(updateCategoryPane);
+        showPane(updateCategoryPane);
     }
 
-    // Log out and go back to the login page
+    // Log out and navigate to the login page
     @FXML
-    private void logOutOnAction(ActionEvent event) throws IOException {
-        // Load the login page FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        Parent loginRoot = loader.load();
-
-        // Get the current stage
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-        // Set the new scene with the login page
-        stage.setScene(new Scene(loginRoot));
-        stage.show();
+    private void logOutOnAction(ActionEvent event) {
+        try {
+            Parent loginRoot = FXMLLoader.load(getClass().getResource("Login.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(loginRoot));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the login page.");
+        }
     }
 
-    // Method to show alerts
+    // Display alerts
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

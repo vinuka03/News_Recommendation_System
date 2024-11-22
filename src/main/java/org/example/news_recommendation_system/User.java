@@ -1,5 +1,6 @@
 package org.example.news_recommendation_system;
 
+
 public class User {
     private String username;
     private String email;
@@ -17,4 +18,5 @@ public class User {
         return email;
     }
 }
+
 

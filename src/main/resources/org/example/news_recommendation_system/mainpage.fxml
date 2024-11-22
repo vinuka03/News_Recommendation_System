@@ -52,7 +52,7 @@
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Button>
-            <Button fx:id="categoriesButton" onAction="#showCategoriesPane" prefHeight="57.0" prefWidth="195.0" style="-fx-text-fill: #0c5094;" text="Categories">
+            <Button fx:id="ViewButton" onAction="#showViewPane" prefHeight="57.0" prefWidth="195.0" style="-fx-text-fill: #0c5094;" text="View">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
@@ -94,7 +94,7 @@
         </Pane>
 
         <!-- Categories Pane -->
-        <Pane fx:id="categoriesPane" visible="false">
+        <Pane fx:id="viewPane" visible="false">
             <children>
                 <Label style="-fx-font-size: 20;" text="Categories" />
                 <!-- Additional categories pane content here -->
@@ -110,7 +110,7 @@
         </Pane>
 
         <!-- Profile Pane -->
-        <Pane fx:id="profilePane" visible="false">
+        <Pane fx:id="profilePane">
             <children>
                 <ImageView fx:id="profileImageView" fitHeight="159.0" fitWidth="204.0" layoutX="192.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                     <image>
@@ -118,39 +118,39 @@
                     </image>
                 </ImageView>
                 <Label layoutX="18.0" layoutY="205.0" text="Username:">
-               <font>
-                  <Font name="Algerian" size="15.0" />
-               </font></Label>
+                    <font>
+                        <Font name="Algerian" size="15.0" />
+                    </font></Label>
                 <TextField fx:id="profileUsername" editable="false" layoutX="117.0" layoutY="199.0" style="-fx-background-color: #4aa1f7;" />
 
                 <Label layoutX="343.0" layoutY="205.0" text="Email:">
-               <font>
-                  <Font name="Algerian" size="15.0" />
-               </font></Label>
+                    <font>
+                        <Font name="Algerian" size="15.0" />
+                    </font></Label>
                 <TextField fx:id="profileEmail" layoutX="406.0" layoutY="199.0" style="-fx-background-color: #4aa1f7;" />
 
                 <Label layoutX="14.0" layoutY="284.0" text="First Name:">
-               <font>
-                  <Font name="Algerian" size="15.0" />
-               </font></Label>
+                    <font>
+                        <Font name="Algerian" size="15.0" />
+                    </font></Label>
                 <TextField fx:id="profileFirstName" layoutX="117.0" layoutY="269.0" style="-fx-background-color: #4aa1f7;" />
 
                 <Label layoutX="315.0" layoutY="276.0" text="Last Name:">
-               <font>
-                  <Font name="Algerian" size="15.0" />
-               </font></Label>
+                    <font>
+                        <Font name="Algerian" size="15.0" />
+                    </font></Label>
                 <TextField fx:id="profileLastName" layoutX="406.0" layoutY="269.0" style="-fx-background-color: #4aa1f7;" />
 
                 <Label layoutX="117.0" layoutY="347.0" text="Password:">
-               <font>
-                  <Font name="Algerian" size="15.0" />
-               </font></Label>
+                    <font>
+                        <Font name="Algerian" size="15.0" />
+                    </font></Label>
                 <TextField fx:id="profilePassword" layoutX="222.0" layoutY="341.0" style="-fx-background-color: #4aa1f7;" />
 
                 <Button fx:id="updateProfileButton" layoutX="292.0" layoutY="422.0" onAction="#updateProfile" style="-fx-background-color: #4aa1f7;" text="Update">
-               <effect>
-                  <DropShadow />
-               </effect></Button>
+                    <effect>
+                        <DropShadow />
+                    </effect></Button>
 
             </children>
         </Pane>
