@@ -9,17 +9,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.bson.Document;
+import org.example.news_recommendation_system.article.ArticleCategorizer;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdminPageController {
 
@@ -53,8 +53,21 @@ public class AdminPageController {
 
     @FXML
     private Button logoutButton;
+    @FXML
+    private TextField headlineTextField;
+    @FXML
+    private TextField shortDescriptionTextField;
+    @FXML
+    private TextField dateTextField;
+    @FXML
+    private TextField linkTextField;
+    @FXML
+    private Button submitArticleButton;
+
 
     private MongoCollection<Document> userDetailsCollection;
+    private MongoCollection<Document> articlesCollection; // Add this for the articles collection
+    private ArticleCategorizer articleCategorizer;
 
     // Initialize the Admin Page Controller
     @FXML
@@ -62,15 +75,18 @@ public class AdminPageController {
         setupDatabaseConnection();
         setupTableColumns();
         loadUsers();
+        articleCategorizer = new ArticleCategorizer();
+
     }
 
     // Setup the MongoDB connection
     private void setupDatabaseConnection() {
         try {
             userDetailsCollection = DatabaseHandler.getCollection("User_Details");
+            articlesCollection = DatabaseHandler.getCollection("articles"); // Initialize articles collection
 
-            if (userDetailsCollection == null) {
-                throw new IllegalStateException("Collection 'User_Details' does not exist in the database.");
+            if (userDetailsCollection == null || articlesCollection == null) {
+                throw new IllegalStateException("Required collections do not exist in the database.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,6 +186,55 @@ public class AdminPageController {
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Unable to load the login page.");
         }
     }
+
+    // Handle submitting a new article
+    @FXML
+    private void handleSubmitArticle() {
+        String headline = headlineTextField.getText();
+        String shortDescription = shortDescriptionTextField.getText();
+        String date = dateTextField.getText();
+        String link = linkTextField.getText();
+
+        // Check if any fields are empty
+        if (headline.isEmpty() || shortDescription.isEmpty() || date.isEmpty() || link.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Missing Fields", "Please fill out all fields.");
+            return;
+        }
+
+        // Prepare article data in a Map
+        Map<String, Object> article = new HashMap<>();
+        article.put("headline", headline);
+        article.put("short_description", shortDescription);
+        article.put("date", date);
+        article.put("link", link);
+
+        // Categorize the article
+        String category = articleCategorizer.categorizeArticle(article);
+
+        // Create a MongoDB document for the article, including the category
+        Document articleDoc = new Document("headline", headline)
+                .append("short_description", shortDescription)
+                .append("date", date)
+                .append("link", link)
+                .append("category", category);
+
+        // Save the article to MongoDB with its category
+        try {
+            articlesCollection.insertOne(articleDoc);
+            showAlert(Alert.AlertType.INFORMATION, "Article Submitted", "The article has been added successfully.");
+
+            headlineTextField.clear();
+            shortDescriptionTextField.clear();
+            dateTextField.clear();
+            linkTextField.clear();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Article Submission Error", "An error occurred while submitting the article.");
+        }
+    }
+
+
 
     // Display alerts
     private void showAlert(Alert.AlertType alertType, String title, String message) {

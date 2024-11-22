@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TextField?>
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.AdminPageController">
 
     <!-- Header -->
@@ -68,8 +69,27 @@
         <!-- Add Article Pane -->
         <Pane fx:id="addArticlePane" visible="false">
             <Label style="-fx-font-size: 20;" text="Add New Article" />
-            <!-- Add article form elements here -->
+
+            <!-- Headline Input Field -->
+            <Label layoutX="20" layoutY="50" text="Headline:" />
+            <TextField fx:id="headlineTextField" layoutX="120" layoutY="50" prefWidth="300" />
+
+            <!-- Short Description Input Field -->
+            <Label layoutX="20" layoutY="100" text="Short Description:" />
+            <TextField fx:id="shortDescriptionTextField" layoutX="120" layoutY="100" prefWidth="300" />
+
+            <!-- Date Input Field -->
+            <Label layoutX="20" layoutY="150" text="Date:" />
+            <TextField fx:id="dateTextField" layoutX="120" layoutY="150" prefWidth="300" />
+
+            <!-- Link Input Field -->
+            <Label layoutX="20" layoutY="200" text="Link:" />
+            <TextField fx:id="linkTextField" layoutX="120" layoutY="200" prefWidth="300" />
+
+            <!-- Submit Button -->
+            <Button fx:id="submitArticleButton" layoutX="120" layoutY="250" text="Submit Article" onAction="#handleSubmitArticle" />
         </Pane>
+
 
         <!-- Delete Article Pane -->
         <Pane fx:id="deleteArticlePane" visible="false">

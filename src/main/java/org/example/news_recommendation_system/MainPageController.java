@@ -1,27 +1,45 @@
 package org.example.news_recommendation_system;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
 import java.io.IOException;
 
+
 public class MainPageController {
 
+
     // StackPane and profile fields
-    public StackPane contentStackPane;
-    public ImageView profileImageView;
+    @FXML
+    private StackPane contentStackPane;
+    @FXML
+    private ImageView profileImageView;
+    @FXML
+    private TableColumn<Article, String> headlineColumn;
+    @FXML
+    private TableColumn<Article, String> shortDescriptionColumn;
+    @FXML
+    private TableColumn<Article, String> dateColumn;
+    @FXML
+    private TableColumn<Article, String> categoryColumn;
+    @FXML
+    private TableColumn linkColumn;
+    @FXML
+    private TableView<Article> articlesTable;
 
     @FXML private TextField profileUsername;
     @FXML private TextField profileEmail;
@@ -47,17 +65,122 @@ public class MainPageController {
 
     // MongoDB collections and current user data
     private MongoCollection<Document> userDetailsCollection;
+    private MongoCollection<Document> articlesCollection;
     private String currentUsername;
 
     // Method to initialize the controller with MongoDB and user data
     public void initializeWithData(String username) {
         this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
+        this.articlesCollection = DatabaseHandler.getCollection("NewsArticles");
+        this.articlesCollection = DatabaseHandler.getCollection("articles");
         this.currentUsername = username;
     }
 
     @FXML
     public void initialize() {
         showPane(homePane); // Display the home pane by default
+        initializeTableColumns();// Initialize the table columns
+
+    }
+
+
+
+    // Customize Table Row Height
+    private void customizeTableRowHeight() {
+        articlesTable.setRowFactory(tv -> {
+            TableRow<Article> row = new TableRow<>() {
+                @Override
+                protected void updateItem(Article item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item != null) {
+                        this.setPrefHeight(60); // Set preferred row height
+                    }
+                }
+            };
+            return row;
+        });
+    }
+
+
+    // Enable Text Wrapping for Specific Columns
+    private void setupTextWrapping() {
+        headlineColumn.setCellFactory(tc -> {
+            TableCell<Article, String> cell = new TableCell<>() {
+                private final Text text = new Text();
+
+                {
+                    text.wrappingWidthProperty().bind(headlineColumn.widthProperty());
+                    setGraphic(text);
+                }
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        text.setText(null);
+                    } else {
+                        text.setText(item);
+                    }
+                }
+            };
+            return cell;
+        });
+
+        shortDescriptionColumn.setCellFactory(tc -> {
+            TableCell<Article, String> cell = new TableCell<>() {
+                private final Text text = new Text();
+
+                {
+                    text.wrappingWidthProperty().bind(shortDescriptionColumn.widthProperty());
+                    setGraphic(text);
+                }
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        text.setText(null);
+                    } else {
+                        text.setText(item);
+                    }
+                }
+            };
+            return cell;
+        });
+
+        // Enable text wrapping for the link column
+        linkColumn.setCellFactory(tc -> {
+            TableCell<Article, String> cell = new TableCell<>() {
+                private final Text text = new Text();
+
+                {
+                    text.wrappingWidthProperty().bind(linkColumn.widthProperty());
+                    setGraphic(text);
+                }
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        text.setText(null);
+                    } else {
+                        text.setText(item);
+                    }
+                }
+            };
+            return cell;
+        });
+    }
+
+
+    // Method to initialize the TableView columns
+    private void initializeTableColumns() {
+        headlineColumn.setCellValueFactory(new PropertyValueFactory<>("headline"));
+        shortDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        linkColumn.setCellValueFactory(new PropertyValueFactory<>("link"));
+
     }
 
     // Method to display only the selected pane
@@ -71,6 +194,11 @@ public class MainPageController {
         pane.setVisible(true);
         if (pane == profilePane) {
             loadUserProfile();  // Load profile details when showing the Profile pane
+        }
+        if (pane == viewPane) {
+            loadArticlesFromDatabase();// Load articles when showing the View pane
+            customizeTableRowHeight(); // Customize row height
+            setupTextWrapping();
         }
     }
 
@@ -121,7 +249,6 @@ public class MainPageController {
             return;
         }
 
-
         // Check if the email already exists in the database for another user (excluding the current user)
         Document existingEmailUser = userDetailsCollection.find(new Document("email", newEmail)).first();
         if (existingEmailUser != null && !existingEmailUser.getString("username").equals(currentUsername)) {
@@ -170,6 +297,27 @@ public class MainPageController {
         alert.showAndWait();
     }
 
+    // Load articles from the MongoDB database
+    private void loadArticlesFromDatabase() {
+        if (articlesCollection != null) {
+            ObservableList<Article> articlesList = FXCollections.observableArrayList();
+            for (Document doc : articlesCollection.find()) {
+                Article article = new Article(
+                        doc.getString("headline"),
+                        doc.getString("short_description"),
+                        doc.getString("date"),
+                        doc.getString("category"),
+                        doc.getString("link")
+                );
+                articlesList.add(article);
+            }
+            articlesTable.setItems(articlesList); // Set the list to the TableView
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load articles.");
+        }
+    }
+
+
     // Pane navigation methods
     @FXML
     private void showHomePane(ActionEvent event) { showPane(homePane); }
@@ -196,6 +344,4 @@ public class MainPageController {
         Stage currentStage = (Stage) logoutButton.getScene().getWindow();
         currentStage.close();
     }
-
-
 }
