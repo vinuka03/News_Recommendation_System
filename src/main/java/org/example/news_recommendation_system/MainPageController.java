@@ -73,6 +73,7 @@ public class MainPageController {
         this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         this.articlesCollection = DatabaseHandler.getCollection("NewsArticles");
         this.articlesCollection = DatabaseHandler.getCollection("articles");
+        setupTextWrapping();
         this.currentUsername = username;
     }
 

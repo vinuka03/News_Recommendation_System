@@ -21,18 +21,13 @@ public class Article {
         return headline;
     }
 
-    public void setHeadline(String headline) {
-        this.headline = headline;
-    }
 
     public String getShortDescription() {
         return shortDescription;
     }
 
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
 
+    public  String  getLink(){return link;}
     public String getDate() {
         return date;
     }
@@ -45,15 +40,4 @@ public class Article {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
 }

@@ -92,9 +92,21 @@
 
 
         <!-- Delete Article Pane -->
+        <!-- Delete Article Pane -->
         <Pane fx:id="deleteArticlePane" visible="false">
             <Label style="-fx-font-size: 20;" text="Delete Articles" />
-            <!-- Delete article elements here -->
+
+            <!-- Table for displaying articles -->
+            <TableView fx:id="articleTableView" layoutX="29.0" layoutY="50.0" prefHeight="367.0" prefWidth="502.0">
+                <columns>
+                    <TableColumn fx:id="headlineColumn" prefWidth="150" text="Headline" />
+                    <TableColumn fx:id="descriptionColumn" prefWidth="150" text="Short Description" />
+                    <TableColumn fx:id="dateColumn" prefWidth="100" text="Date" />
+                    <TableColumn fx:id="linkColumn" prefWidth="100" text="Link" />
+                    <TableColumn fx:id="categoryColumn" prefWidth="100" text="Link" />
+                    <TableColumn fx:id="deleteArticleColumn" prefWidth="100" text="Delete" />
+                </columns>
+            </TableView>
         </Pane>
 
         <!-- Delete User Pane -->
