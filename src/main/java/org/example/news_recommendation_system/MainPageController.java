@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -81,8 +82,44 @@ public class MainPageController {
     public void initialize() {
         showPane(homePane); // Display the home pane by default
         initializeTableColumns();// Initialize the table columns
+        addTableRowClickListener();  // Add the listener for row clicks
+        initializeTableColumns();
+
 
     }
+
+
+    // Add event listener to handle row click
+    private void addTableRowClickListener() {
+        articlesTable.setOnMouseClicked((MouseEvent event) -> {
+            if (event.getClickCount() == 1) {
+                Article selectedArticle = articlesTable.getSelectionModel().getSelectedItem();
+                if (selectedArticle != null) {
+                    openArticleDetailsWindow(selectedArticle);
+                }
+            }
+        });
+    }
+
+    // Method to open a new window with the article details
+    private void openArticleDetailsWindow(Article article) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ArticleDetails.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            // Get the controller and pass the selected article
+            ArticleDetailsController controller = loader.getController();
+            controller.initializeWithArticle(article);
+
+            Stage stage = new Stage();
+            stage.setTitle("Article Details");
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 
@@ -127,27 +164,7 @@ public class MainPageController {
             return cell;
         });
 
-        shortDescriptionColumn.setCellFactory(tc -> {
-            TableCell<Article, String> cell = new TableCell<>() {
-                private final Text text = new Text();
 
-                {
-                    text.wrappingWidthProperty().bind(shortDescriptionColumn.widthProperty());
-                    setGraphic(text);
-                }
-
-                @Override
-                protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        text.setText(null);
-                    } else {
-                        text.setText(item);
-                    }
-                }
-            };
-            return cell;
-        });
 
         // Enable text wrapping for the link column
         linkColumn.setCellFactory(tc -> {
