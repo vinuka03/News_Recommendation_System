@@ -10,6 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -29,6 +31,7 @@ public class AdminPageController {
     public Button deleteUserButton;
     public Button updateCategoryButton;
     public Button addArticleButton;
+
 
 
     // UI components for user management
@@ -67,7 +70,9 @@ public class AdminPageController {
     @FXML
     private Pane deleteUserPane;
     @FXML
-    private Pane updateCategoryPane;
+    private Pane AdminHomePane;
+    @FXML
+    private ImageView categoryImageView;
 
     @FXML
     private StackPane adminContentStackPane;
@@ -99,6 +104,8 @@ public class AdminPageController {
         loadArticles();
         setupTextWrapping();
         articleCategorizer = new ArticleCategorizer();
+        loadCategoryImage();
+        showPane(AdminHomePane);
     }
 
     // Setup the MongoDB connection
@@ -115,6 +122,20 @@ public class AdminPageController {
             showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");
         }
     }
+
+
+    @FXML
+    private void loadCategoryImage() {
+        try {
+            // Replace "path/to/image.png" with the actual path to your image
+            Image categoryImage = new Image(getClass().getResourceAsStream("/org/example/news_recommendation_system/images/CategoryImage.jpg"));
+            categoryImageView.setImage(categoryImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Image Load Error", "Unable to load the category image.");
+        }
+    }
+
 
     // Setup TableView columns for users
     private void setupUserTableColumns() {
@@ -217,7 +238,7 @@ public class AdminPageController {
         addArticlePane.setVisible(false);
         deleteArticlePane.setVisible(false);
         deleteUserPane.setVisible(false);
-        updateCategoryPane.setVisible(false);
+        AdminHomePane.setVisible(false);
 
         paneToShow.setVisible(true);
     }
@@ -363,7 +384,7 @@ public class AdminPageController {
     // Show Update Category Pane
     @FXML
     private void showUpdateCategoryPane() {
-        showPane(updateCategoryPane);
+        showPane(AdminHomePane);
     }
 
     // Log out and navigate to the login page

@@ -4,7 +4,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -12,7 +14,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.TextField?>
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.AdminPageController">
 
     <!-- Header -->
@@ -55,7 +56,7 @@
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Button>
-            <Button fx:id="updateCategoryButton" onAction="#showUpdateCategoryPane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Update Categories">
+            <Button fx:id="updateCategoryButton" onAction="#showUpdateCategoryPane" prefHeight="57.0" prefWidth="200.0" style="-fx-text-fill: #0c5094;" text="Home">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
@@ -87,7 +88,7 @@
             <TextField fx:id="linkTextField" layoutX="120" layoutY="200" prefWidth="300" />
 
             <!-- Submit Button -->
-            <Button fx:id="submitArticleButton" layoutX="120" layoutY="250" text="Submit Article" onAction="#handleSubmitArticle" />
+            <Button fx:id="submitArticleButton" layoutX="120" layoutY="250" onAction="#handleSubmitArticle" text="Submit Article" />
         </Pane>
 
 
@@ -110,7 +111,7 @@
         </Pane>
 
         <!-- Delete User Pane -->
-        <Pane fx:id="deleteUserPane">
+        <Pane fx:id="deleteUserPane" visible="false">
             <TableView fx:id="userTableView" layoutX="29.0" layoutY="50.0" prefHeight="367.0" prefWidth="502.0">
                 <columns>
                     <TableColumn fx:id="usernameColumn" prefWidth="200" text="Username" />
@@ -122,9 +123,13 @@
         </Pane>
 
         <!-- Update Categories Pane -->
-        <Pane fx:id="updateCategoryPane" visible="false">
-            <Label style="-fx-font-size: 20;" text="Update Categories" />
-            <!-- Update categories form elements here -->
+        <Pane fx:id="AdminHomePane">
+            <ImageView fx:id="categoryImageView" fitHeight="381.0" fitWidth="570.0" layoutX="5.0" layoutY="69.0" />
+         <Label layoutX="125.0" layoutY="14.0" prefHeight="57.0" prefWidth="300.0" text="Welcome to Admin Page" textAlignment="CENTER">
+            <font>
+               <Font name="Algerian" size="20.0" />
+            </font>
+         </Label>
         </Pane>
 
     </StackPane>

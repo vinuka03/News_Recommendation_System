@@ -48,6 +48,14 @@ public class MainPageController {
     @FXML private TextField profileLastName;
     @FXML private TextField profilePassword;
     @FXML private Button updateProfileButton;
+    @FXML private TextField searchHeadlineField;
+    @FXML private TextField searchCategoryField;
+    @FXML private TableView<Article> searchResultsTable;
+    @FXML private TableColumn<Article, String> resultHeadlineColumn;
+    @FXML private TableColumn<Article, String> resultCategoryColumn;
+    @FXML private TableColumn<Article, String> resultDateColumn;
+    @FXML private TextField ratingField;
+
 
     // Sidebar Buttons
     @FXML private Button homeButton;
@@ -67,6 +75,10 @@ public class MainPageController {
     // MongoDB collections and current user data
     private MongoCollection<Document> userDetailsCollection;
     private MongoCollection<Document> articlesCollection;
+
+    private MongoCollection<Document> userHistoryCollection;
+    private MongoCollection<Document> userRatingCollection;
+
     private String currentUsername;
 
     // Method to initialize the controller with MongoDB and user data
@@ -74,6 +86,8 @@ public class MainPageController {
         this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         this.articlesCollection = DatabaseHandler.getCollection("NewsArticles");
         this.articlesCollection = DatabaseHandler.getCollection("articles");
+        this.userHistoryCollection = DatabaseHandler.getCollection("User_History");
+        this.userRatingCollection = DatabaseHandler.getCollection("User_Rating");
         setupTextWrapping();
         this.currentUsername = username;
     }
@@ -84,9 +98,30 @@ public class MainPageController {
         initializeTableColumns();// Initialize the table columns
         addTableRowClickListener();  // Add the listener for row clicks
         initializeTableColumns();
-
+        initializeSearchResultsTable();
 
     }
+    private void initializeSearchResultsTable() {
+        resultHeadlineColumn.setCellValueFactory(new PropertyValueFactory<>("headline"));
+        resultCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        resultDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+    }
+    //save article history
+    private void saveArticleToHistory(Article article) {
+        if (userHistoryCollection != null && currentUsername != null) {
+            Document userHistory = new Document()
+                    .append("username", currentUsername)
+                    .append("headline", article.getHeadline())
+                    .append("category", article.getCategory())
+                    .append("timestamp", System.currentTimeMillis()); // Add timestamp for tracking
+
+            userHistoryCollection.insertOne(userHistory);
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to save to user history.");
+        }
+    }
+
+
 
 
     // Add event listener to handle row click
@@ -115,6 +150,12 @@ public class MainPageController {
             stage.setTitle("Article Details");
             stage.setScene(scene);
             stage.show();
+
+            // Save interaction to User_History
+            saveArticleToHistory(article);
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -334,6 +375,89 @@ public class MainPageController {
             showAlert(Alert.AlertType.ERROR, "Error", "Unable to load articles.");
         }
     }
+
+    //search article by headline  and category
+    @FXML
+    private void searchArticles(ActionEvent event) {
+        String searchHeadline = searchHeadlineField.getText().trim();
+        String searchCategory = searchCategoryField.getText().trim();
+
+        // Validate input
+        if (searchHeadline.isEmpty() && searchCategory.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Please enter at least a headline or category to search.");
+            return;
+        }
+
+        // Prepare the search query
+        Document query = new Document();
+        if (!searchHeadline.isEmpty()) {
+            query.append("headline", new Document("$regex", searchHeadline).append("$options", "i")); // Case-insensitive search
+        }
+        if (!searchCategory.isEmpty()) {
+            query.append("category", new Document("$regex", searchCategory).append("$options", "i"));
+        }
+
+        // Execute the search in the database
+        ObservableList<Article> searchResults = FXCollections.observableArrayList();
+        for (Document doc : articlesCollection.find(query)) {
+            Article article = new Article(
+                    doc.getString("headline"),
+                    doc.getString("short_description"),
+                    doc.getString("date"),
+                    doc.getString("category"),
+                    doc.getString("link")
+            );
+            searchResults.add(article);
+        }
+
+        // Check if search results are empty
+        if (searchResults.isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, "No Articles Found", "No articles found for the given headline and category.");
+        } else {
+            // Update the TableView with the search results
+            searchResultsTable.setItems(searchResults);
+        }
+    }
+
+
+
+    @FXML
+    private void submitRating(ActionEvent event) {
+        Article selectedArticle = searchResultsTable.getSelectionModel().getSelectedItem();
+        if (selectedArticle == null) {
+            showAlert(Alert.AlertType.ERROR, "No Selection", "Please select an article to rate.");
+            return;
+        }
+
+        String ratingText = ratingField.getText();
+        int rating;
+        try {
+            rating = Integer.parseInt(ratingText);
+            if (rating < 1 || rating > 5) {
+                throw new NumberFormatException("Out of range");
+            }
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Invalid Rating", "Please enter a number between 1 and 5.");
+            return;
+        }
+
+        Document ratingDoc = new Document("username", currentUsername)
+                .append("headline", selectedArticle.getHeadline())
+                .append("category", selectedArticle.getCategory())
+                .append("rating", rating)
+                .append("timestamp", System.currentTimeMillis());
+
+        DatabaseHandler.getCollection("User_Rating").insertOne(ratingDoc);
+
+        showAlert(Alert.AlertType.INFORMATION, "Rating Submitted", "Your rating has been saved successfully.");
+        ratingField.clear();
+        searchResultsTable.getSelectionModel().clearSelection();
+        searchHeadlineField.clear();
+        searchCategoryField.clear();
+        searchResultsTable.getItems().clear();
+    }
+
+
 
 
     // Pane navigation methods
