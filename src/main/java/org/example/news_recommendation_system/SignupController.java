@@ -13,18 +13,18 @@ import javafx.stage.Stage;
 import org.bson.Document;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SignupController {
 
     @FXML
-    public Button signup;
+    private Button signup;
     @FXML
-    public Button goBackLogin;
-    public TextField usernameField;
-
-
+    private Button goBackLogin;
+    @FXML
+    private TextField usernameField;
     @FXML
     private TextField firstNameField;
     @FXML
@@ -42,7 +42,7 @@ public class SignupController {
     @FXML
     private CheckBox healthCheckbox;
     @FXML
-    private CheckBox ComedyCheckbox;
+    private CheckBox ComedyCheckbox; // Ensure this checkbox corresponds to "Comedy" category
     @FXML
     private CheckBox politicalCheckbox;
     @FXML
@@ -91,8 +91,9 @@ public class SignupController {
             return;
         }
 
-        List<String> categories = getSelectedCategories();
-        if (categories.size() < 2) {
+        // Get selected categories and their scores
+        Map<String, Integer> categoryScores = getCategoryScores();
+        if (categoryScores.values().stream().filter(score -> score == 5).count() < 2) {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Please select at least two categories.");
             return;
         }
@@ -103,16 +104,26 @@ public class SignupController {
                 .append("email", email)
                 .append("username", username)
                 .append("password", password)
-                .append("categories", categories)
-                .append("role", "user");  // Assign 'user' role
+                .append("role", "user"); // Assign 'user' role
 
-        // Insert user into the database
+        // Save the user and preferences
         boolean userCreated = userService.createUser(newUser);
         if (userCreated) {
-            showAlert(Alert.AlertType.INFORMATION, "Signup Successful", "Account created successfully!");
-            clearFields();
+            // Create and save user preferences document
+            Document userPreferences = new Document("username", username)
+                    .append("preferences", categoryScores);
+
+            boolean preferencesSaved = userService.saveUserPreferences(userPreferences);
+            if (preferencesSaved) {
+                showAlert(Alert.AlertType.INFORMATION, "Signup Successful", "Account created successfully!");
+                clearFields();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Signup Error", "Could not save user preferences.");
+                clearFields();  // Clear fields even if preferences are not saved
+            }
         } else {
             showAlert(Alert.AlertType.ERROR, "Signup Error", "Could not save user data.");
+            clearFields();  // Clear fields even if user data is not saved
         }
     }
 
@@ -135,15 +146,15 @@ public class SignupController {
         currentStage.close();
     }
 
-    private List<String> getSelectedCategories() {
-        List<String> categories = new ArrayList<>();
-        if (techCheckbox.isSelected()) categories.add("Technology");
-        if (sportsCheckbox.isSelected()) categories.add("Sports");
-        if (healthCheckbox.isSelected()) categories.add("Health");
-        if (ComedyCheckbox.isSelected()) categories.add("AI");
-        if (politicalCheckbox.isSelected()) categories.add("Political");
-        if (religiousCheckbox.isSelected()) categories.add("Religious");
-        return categories;
+    private Map<String, Integer> getCategoryScores() {
+        Map<String, Integer> scores = new HashMap<>();
+        scores.put("Technology", techCheckbox.isSelected() ? 5 : 0);
+        scores.put("Sports", sportsCheckbox.isSelected() ? 5 : 0);
+        scores.put("Health", healthCheckbox.isSelected() ? 5 : 0);
+        scores.put("Comedy", ComedyCheckbox.isSelected() ? 5 : 0);  // Ensure category name matches "Comedy"
+        scores.put("Political", politicalCheckbox.isSelected() ? 5 : 0);
+        scores.put("Religious", religiousCheckbox.isSelected() ? 5 : 0);
+        return scores;
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
@@ -166,7 +177,7 @@ public class SignupController {
         techCheckbox.setSelected(false);
         sportsCheckbox.setSelected(false);
         healthCheckbox.setSelected(false);
-        ComedyCheckbox.setSelected(false);
+        ComedyCheckbox.setSelected(false);  // Ensure this matches the checkbox variable
         politicalCheckbox.setSelected(false);
         religiousCheckbox.setSelected(false);
     }

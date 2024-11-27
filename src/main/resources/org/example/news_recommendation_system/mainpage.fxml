@@ -64,11 +64,6 @@
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Button>
-            <Button fx:id="rateButton" onAction="#showRatePane" prefHeight="57.0" prefWidth="195.0" style="-fx-text-fill: #0c5094;" text="Rate">
-                <font>
-                    <Font name="System Bold" size="15.0" />
-                </font>
-            </Button>
         </children>
     </VBox>
 
@@ -110,34 +105,6 @@
             </children>
         </Pane>
 
-        <Pane fx:id="ratePane" visible="false" xmlns:fx="http://javafx.com/fxml">
-            <children>
-                <!-- Title -->
-                <Label layoutX="20" layoutY="20" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Rate Articles" />
-
-                <!-- Search Section -->
-                <Label layoutX="20" layoutY="60" text="Search by:" />
-                <Label layoutX="20" layoutY="100" text="Headline:" />
-                <TextField fx:id="searchHeadlineField" layoutX="100" layoutY="100" prefWidth="300" />
-                <Label layoutX="20" layoutY="140" text="Category:" />
-                <TextField fx:id="searchCategoryField" layoutX="100" layoutY="140" prefWidth="300" />
-                <Button fx:id="searchButton" layoutX="420" layoutY="120" text="Search" onAction="#searchArticles" />
-
-                <!-- Table to display search results -->
-                <TableView fx:id="searchResultsTable" layoutX="20" layoutY="200" prefWidth="500" prefHeight="200">
-                    <columns>
-                        <TableColumn fx:id="resultHeadlineColumn" text="Headline" prefWidth="200" />
-                        <TableColumn fx:id="resultCategoryColumn" text="Category" prefWidth="100" />
-                        <TableColumn fx:id="resultDateColumn" text="Date" prefWidth="100" />
-                    </columns>
-                </TableView>
-
-                <!-- Rating Section -->
-                <Label layoutX="20" layoutY="420" text="Enter Rating (1-5):" />
-                <TextField fx:id="ratingField" layoutX="150" layoutY="420" prefWidth="50" />
-                <Button fx:id="submitRatingButton" layoutX="220" layoutY="420" text="Submit Rating" onAction="#submitRating" />
-            </children>
-        </Pane>
 
         <!-- Profile Pane -->
         <Pane fx:id="profilePane" visible="false">

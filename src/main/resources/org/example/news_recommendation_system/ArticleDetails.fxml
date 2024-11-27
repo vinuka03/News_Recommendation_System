@@ -22,6 +22,8 @@
     <!- Add Hyperlink for the clickable link -->
     <Hyperlink fx:id="articleLink" layoutX="50" layoutY="440" text="Click here to open the article link"/>
 
+    <Button fx:id="likeButton" layoutX="150" layoutY="490" onAction="#submitLike" prefHeight="31.0" prefWidth="99.0" style="-fx-background-color: #4caf50;" text="Like" />
+    <Button fx:id="dislikeButton" layoutX="300" layoutY="490" onAction="#submitDislike" prefHeight="31.0" prefWidth="99.0" style="-fx-background-color: #f44336;" text="Dislike" />
 
     <Button fx:id="closeButton" layoutX="535.0" layoutY="449.0" onAction="#closeDetails" prefHeight="31.0" prefWidth="99.0" style="-fx-background-color: #4aa1f7;" text="Close" />
 </AnchorPane>

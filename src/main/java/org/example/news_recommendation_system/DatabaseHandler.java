@@ -46,4 +46,8 @@ public class DatabaseHandler {
     public static void closeConnection() {
         // MongoClient.close() is not needed if using MongoClients.create() as shown above.
     }
+
+
+
+
 }

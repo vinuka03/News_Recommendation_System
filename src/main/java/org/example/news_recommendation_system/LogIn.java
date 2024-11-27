@@ -79,6 +79,7 @@ public class LogIn extends BaseController {
         } else {
             showAlert(Alert.AlertType.ERROR, "Login", "Incorrect username or password");
         }
+
     }
 
 

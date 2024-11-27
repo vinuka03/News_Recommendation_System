@@ -48,13 +48,6 @@ public class MainPageController {
     @FXML private TextField profileLastName;
     @FXML private TextField profilePassword;
     @FXML private Button updateProfileButton;
-    @FXML private TextField searchHeadlineField;
-    @FXML private TextField searchCategoryField;
-    @FXML private TableView<Article> searchResultsTable;
-    @FXML private TableColumn<Article, String> resultHeadlineColumn;
-    @FXML private TableColumn<Article, String> resultCategoryColumn;
-    @FXML private TableColumn<Article, String> resultDateColumn;
-    @FXML private TextField ratingField;
 
 
     // Sidebar Buttons
@@ -70,14 +63,14 @@ public class MainPageController {
     @FXML private Pane recommendedPane;
     @FXML private Pane viewPane;
     @FXML private Pane profilePane;
-    @FXML private Pane ratePane;
+
 
     // MongoDB collections and current user data
     private MongoCollection<Document> userDetailsCollection;
     private MongoCollection<Document> articlesCollection;
 
     private MongoCollection<Document> userHistoryCollection;
-    private MongoCollection<Document> userRatingCollection;
+
 
     private String currentUsername;
 
@@ -86,8 +79,8 @@ public class MainPageController {
         this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
         this.articlesCollection = DatabaseHandler.getCollection("NewsArticles");
         this.articlesCollection = DatabaseHandler.getCollection("articles");
-        this.userHistoryCollection = DatabaseHandler.getCollection("User_History");
-        this.userRatingCollection = DatabaseHandler.getCollection("User_Rating");
+        this.userHistoryCollection = DatabaseHandler.getCollection("User_Preferences");
+
         setupTextWrapping();
         this.currentUsername = username;
     }
@@ -98,14 +91,85 @@ public class MainPageController {
         initializeTableColumns();// Initialize the table columns
         addTableRowClickListener();  // Add the listener for row clicks
         initializeTableColumns();
-        initializeSearchResultsTable();
+
 
     }
-    private void initializeSearchResultsTable() {
-        resultHeadlineColumn.setCellValueFactory(new PropertyValueFactory<>("headline"));
-        resultCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
-        resultDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+// method to open article in a new scene
+private void openArticleDetailsWindow(Article article) {
+    try {
+        // Load the ArticleDetails.fxml file
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ArticleDetails.fxml"));
+        Parent articleDetailsRoot = fxmlLoader.load();
+
+        // Get the ArticleDetailsController instance from the FXMLLoader
+        ArticleDetailsController articleDetailsController = fxmlLoader.getController();
+
+        // Pass the logged-in username to the ArticleDetailsController
+        articleDetailsController.setUsername(this.currentUsername);  // 'this.currentUsername' holds the logged-in user's username
+
+        // Initialize the article details in the controller
+        articleDetailsController.initializeWithArticle(article);
+
+        // Create a new Stage for the article details window
+        Stage articleDetailsStage = new Stage();
+        articleDetailsStage.setTitle("Article Details");
+        articleDetailsStage.setScene(new Scene(articleDetailsRoot));
+        articleDetailsStage.show();
+
+        // Optionally close the current window
+        Stage currentStage = (Stage) contentStackPane.getScene().getWindow();
+        currentStage.close();
+
+        // Save article view to preferences (or history)
+        saveArticleCategoryToPreferences(article);  // This method updates the user preferences based on the article viewed
+
+    } catch (IOException e) {
+        e.printStackTrace();
+        showAlert(Alert.AlertType.ERROR, "Error", "Failed to open article details.");
     }
+}
+
+    // Method to get the logged-in username (replace this with your actual logic)
+
+
+
+    // Method to save article category score to the User_Preference collection
+    private void saveArticleCategoryToPreferences(Article article) {
+        if (userHistoryCollection != null && currentUsername != null) {
+            // Retrieve the category from the article
+            String category = article.getCategory();
+
+            // Query the User_Preference collection to find the user's preference document
+            Document userPreference = userHistoryCollection.find(new Document("username", currentUsername)).first();
+
+            if (userPreference != null) {
+                // Retrieve the current preferences (embedded document) from the user document
+                Document preferences = (Document) userPreference.get("preferences");
+
+                // Check if the category exists in the preferences, if not set it to 0
+                int currentScore = preferences.containsKey(category) ? preferences.getInteger(category) : 0;
+
+                // Increment the score for the relevant category
+                int newScore = currentScore + 1;
+
+                // Update the User_Preference document with the new score for the category
+                userHistoryCollection.updateOne(
+                        new Document("username", currentUsername),
+                        new Document("$set", new Document("preferences." + category, newScore))
+                );
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error", "User preferences not found.");
+            }
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error", "Unable to save to user preferences.");
+        }
+    }
+
+
+
+
+
     //save article history
     private void saveArticleToHistory(Article article) {
         if (userHistoryCollection != null && currentUsername != null) {
@@ -136,30 +200,7 @@ public class MainPageController {
         });
     }
 
-    // Method to open a new window with the article details
-    private void openArticleDetailsWindow(Article article) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ArticleDetails.fxml"));
-            Scene scene = new Scene(loader.load());
 
-            // Get the controller and pass the selected article
-            ArticleDetailsController controller = loader.getController();
-            controller.initializeWithArticle(article);
-
-            Stage stage = new Stage();
-            stage.setTitle("Article Details");
-            stage.setScene(scene);
-            stage.show();
-
-            // Save interaction to User_History
-            saveArticleToHistory(article);
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
@@ -248,7 +289,7 @@ public class MainPageController {
         recommendedPane.setVisible(false);
         viewPane.setVisible(false);
         profilePane.setVisible(false);
-        ratePane.setVisible(false);
+
 
         pane.setVisible(true);
         if (pane == profilePane) {
@@ -375,91 +416,6 @@ public class MainPageController {
             showAlert(Alert.AlertType.ERROR, "Error", "Unable to load articles.");
         }
     }
-
-    //search article by headline  and category
-    @FXML
-    private void searchArticles(ActionEvent event) {
-        String searchHeadline = searchHeadlineField.getText().trim();
-        String searchCategory = searchCategoryField.getText().trim();
-
-        // Validate input
-        if (searchHeadline.isEmpty() && searchCategory.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "Please enter at least a headline or category to search.");
-            return;
-        }
-
-        // Prepare the search query
-        Document query = new Document();
-        if (!searchHeadline.isEmpty()) {
-            query.append("headline", new Document("$regex", searchHeadline).append("$options", "i")); // Case-insensitive search
-        }
-        if (!searchCategory.isEmpty()) {
-            query.append("category", new Document("$regex", searchCategory).append("$options", "i"));
-        }
-
-        // Execute the search in the database
-        ObservableList<Article> searchResults = FXCollections.observableArrayList();
-        for (Document doc : articlesCollection.find(query)) {
-            Article article = new Article(
-                    doc.getString("headline"),
-                    doc.getString("short_description"),
-                    doc.getString("date"),
-                    doc.getString("category"),
-                    doc.getString("link")
-            );
-            searchResults.add(article);
-        }
-
-        // Check if search results are empty
-        if (searchResults.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "No Articles Found", "No articles found for the given headline and category.");
-        } else {
-            // Update the TableView with the search results
-            searchResultsTable.setItems(searchResults);
-        }
-    }
-
-
-
-    @FXML
-    private void submitRating(ActionEvent event) {
-        Article selectedArticle = searchResultsTable.getSelectionModel().getSelectedItem();
-        if (selectedArticle == null) {
-            showAlert(Alert.AlertType.ERROR, "No Selection", "Please select an article to rate.");
-            return;
-        }
-
-        String ratingText = ratingField.getText();
-        int rating;
-        try {
-            rating = Integer.parseInt(ratingText);
-            if (rating < 1 || rating > 5) {
-                throw new NumberFormatException("Out of range");
-            }
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Invalid Rating", "Please enter a number between 1 and 5.");
-            return;
-        }
-
-        Document ratingDoc = new Document("username", currentUsername)
-                .append("headline", selectedArticle.getHeadline())
-                .append("category", selectedArticle.getCategory())
-                .append("rating", rating)
-                .append("timestamp", System.currentTimeMillis());
-
-        DatabaseHandler.getCollection("User_Rating").insertOne(ratingDoc);
-
-        showAlert(Alert.AlertType.INFORMATION, "Rating Submitted", "Your rating has been saved successfully.");
-        ratingField.clear();
-        searchResultsTable.getSelectionModel().clearSelection();
-        searchHeadlineField.clear();
-        searchCategoryField.clear();
-        searchResultsTable.getItems().clear();
-    }
-
-
-
-
     // Pane navigation methods
     @FXML
     private void showHomePane(ActionEvent event) { showPane(homePane); }
@@ -469,8 +425,7 @@ public class MainPageController {
     private void showViewPane(ActionEvent event) { showPane(viewPane); }
     @FXML
     private void showProfilePane(ActionEvent event) { showPane(profilePane); }
-    @FXML
-    private void showRatePane(ActionEvent event) { showPane(ratePane); }
+
 
     // Log out action to return to the login page
     @FXML
