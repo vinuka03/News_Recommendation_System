@@ -95,7 +95,9 @@ public class MainPageController {
 
     }
 
-// method to open article in a new scene
+
+// Method to open article in a new scene
+// Method to open article in a new scene
 private void openArticleDetailsWindow(Article article) {
     try {
         // Load the ArticleDetails.fxml file
@@ -115,22 +117,19 @@ private void openArticleDetailsWindow(Article article) {
         Stage articleDetailsStage = new Stage();
         articleDetailsStage.setTitle("Article Details");
         articleDetailsStage.setScene(new Scene(articleDetailsRoot));
-        articleDetailsStage.show();
+        articleDetailsStage.show();  // Show the article detail window
 
-        // Optionally close the current window
-        Stage currentStage = (Stage) contentStackPane.getScene().getWindow();
-        currentStage.close();
 
-        // Save article view to preferences (or history)
+        // Optionally, save article view to preferences (or history)
         saveArticleCategoryToPreferences(article);  // This method updates the user preferences based on the article viewed
-
     } catch (IOException e) {
         e.printStackTrace();
         showAlert(Alert.AlertType.ERROR, "Error", "Failed to open article details.");
     }
 }
 
-    // Method to get the logged-in username (replace this with your actual logic)
+
+
 
 
 
@@ -184,6 +183,7 @@ private void openArticleDetailsWindow(Article article) {
             showAlert(Alert.AlertType.ERROR, "Error", "Unable to save to user history.");
         }
     }
+
 
 
 

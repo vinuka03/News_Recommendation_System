@@ -102,10 +102,11 @@ public class ArticleDetailsController {
 
     // Close the details window
     @FXML
-    private void closeDetails() {
-        Stage stage = (Stage) detailHeadline.getScene().getWindow();
-        stage.close();
+    private void closeDetails(ActionEvent event) {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();  // Close the article details window
     }
+
 
     // Method to update the user's preferences in the database
     private void updateUserPreferenceScore(int points) {

@@ -152,7 +152,7 @@ public class SignupController {
         scores.put("Sports", sportsCheckbox.isSelected() ? 5 : 0);
         scores.put("Health", healthCheckbox.isSelected() ? 5 : 0);
         scores.put("Comedy", ComedyCheckbox.isSelected() ? 5 : 0);  // Ensure category name matches "Comedy"
-        scores.put("Political", politicalCheckbox.isSelected() ? 5 : 0);
+        scores.put("Politics", politicalCheckbox.isSelected() ? 5 : 0);
         scores.put("Religious", religiousCheckbox.isSelected() ? 5 : 0);
         return scores;
     }
