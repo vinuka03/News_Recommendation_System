@@ -73,8 +73,16 @@
         <!-- Recommended Pane -->
         <Pane fx:id="recommendedPane" visible="false">
             <children>
-                <Label style="-fx-font-size: 20;" text="Recommended Articles" />
-                <!-- Additional recommended pane content here -->
+                <TableView fx:id="recommendedArticlesTable" layoutX="14.0" layoutY="14.0" prefWidth="600.0" prefHeight="400.0">
+                    <columns>
+                        <TableColumn fx:id="recommendedHeadlineColumn" text="Headline" prefWidth="200" />
+                        <TableColumn fx:id="recommendedShortDescriptionColumn" text="Short Description" prefWidth="150" />
+                        <TableColumn fx:id="recommendedDateColumn" text="Date" prefWidth="100" />
+                        <TableColumn fx:id="recommendedCategoryColumn" text="Category" prefWidth="100" />
+                        <TableColumn fx:id="recommendedLinkColumn" text="Link" prefWidth="100" />
+                    </columns>
+                </TableView>
+                <Button text="Refresh" onAction="#refreshArticles" layoutX="270.0" layoutY="420.0" />
             </children>
         </Pane>
 

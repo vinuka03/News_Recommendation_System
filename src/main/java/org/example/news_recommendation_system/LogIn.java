@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.bson.Document;
 import org.example.news_recommendation_system.BaseController;
 import org.example.news_recommendation_system.DatabaseHandler;
 
@@ -35,6 +36,22 @@ public class LogIn extends BaseController {
     public void initialize() {
         initializeDatabaseCollections();
     }
+
+    // Override the checkCredentials method to perform user-specific logic
+    @Override
+    protected boolean checkCredentials(String username, String password) {
+        try {
+            Document user = userDetailsCollection.find(new Document("username", username)
+                    .append("password", password)).first();
+            return user != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Login Error", "An error occurred while checking credentials.");
+            return false;
+        }
+    }
+
+
 
     @FXML
     private void goToMainPage(ActionEvent event) throws IOException {

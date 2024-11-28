@@ -1,5 +1,7 @@
 package org.example.news_recommendation_system;
 
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,17 +15,38 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
+import javax.swing.*;
 import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+
 
 
 public class MainPageController {
 
+    @FXML
+    private TableView recommendedArticlesTable;
+    @FXML
+    private TableColumn<Article, String> recommendedHeadlineColumn;
+    @FXML
+    private TableColumn<Article, String> recommendedShortDescriptionColumn;
+    @FXML
+    private TableColumn<Article, String> recommendedDateColumn;
+    @FXML
+    private TableColumn<Article, String> recommendedCategoryColumn;
+    @FXML
+    private TableColumn<Article, String> recommendedLinkColumn;
 
+    @FXML private VBox articlesVBox;
+    @FXML private Button refreshButton;
+    
     // StackPane and profile fields
     @FXML
     private StackPane contentStackPane;
@@ -64,6 +87,8 @@ public class MainPageController {
     @FXML private Pane viewPane;
     @FXML private Pane profilePane;
 
+    private String loggedInUsername;
+
 
     // MongoDB collections and current user data
     private MongoCollection<Document> userDetailsCollection;
@@ -93,10 +118,11 @@ public class MainPageController {
         initializeTableColumns();
 
 
+
     }
 
 
-// Method to open article in a new scene
+
 // Method to open article in a new scene
 private void openArticleDetailsWindow(Article article) {
     try {
@@ -188,17 +214,21 @@ private void openArticleDetailsWindow(Article article) {
 
 
 
-    // Add event listener to handle row click
-    private void addTableRowClickListener() {
-        articlesTable.setOnMouseClicked((MouseEvent event) -> {
-            if (event.getClickCount() == 1) {
-                Article selectedArticle = articlesTable.getSelectionModel().getSelectedItem();
-                if (selectedArticle != null) {
-                    openArticleDetailsWindow(selectedArticle);
-                }
+
+        // Add event listener to handle row click
+        private void addTableRowClickListener() {
+            // Handle clicks on both tables
+            for (TableView<?> table : new TableView<?>[]{articlesTable, recommendedArticlesTable}) {
+                table.setOnMouseClicked((MouseEvent event) -> {
+                    if (event.getClickCount() == 1) {
+                        Article selectedArticle = (Article) table.getSelectionModel().getSelectedItem();
+                        if (selectedArticle != null) {
+                            openArticleDetailsWindow(selectedArticle);
+                        }
+                    }
+                });
             }
-        });
-    }
+        }
 
 
 
@@ -280,6 +310,13 @@ private void openArticleDetailsWindow(Article article) {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
         linkColumn.setCellValueFactory(new PropertyValueFactory<>("link"));
+        recommendedHeadlineColumn.setCellValueFactory(new PropertyValueFactory<>("headline"));
+        recommendedShortDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
+        recommendedDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        recommendedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        recommendedLinkColumn.setCellValueFactory(new PropertyValueFactory<>("link"));
+
+
 
     }
 
@@ -301,6 +338,11 @@ private void openArticleDetailsWindow(Article article) {
             setupTextWrapping();
         }
     }
+    public void showRecommendedPane() {
+        recommendedPane.setVisible(true);
+        fetchRecommendedArticles();
+    }
+
 
     // Load user details into profile fields
     private void loadUserProfile() {
@@ -425,6 +467,7 @@ private void openArticleDetailsWindow(Article article) {
     private void showViewPane(ActionEvent event) { showPane(viewPane); }
     @FXML
     private void showProfilePane(ActionEvent event) { showPane(profilePane); }
+    
 
 
     // Log out action to return to the login page
@@ -441,4 +484,86 @@ private void openArticleDetailsWindow(Article article) {
         Stage currentStage = (Stage) logoutButton.getScene().getWindow();
         currentStage.close();
     }
+
+    @FXML
+    private void refreshArticles() {
+        fetchRecommendedArticles();
+    }
+    private void fetchRecommendedArticles() {
+        try {
+            // Fetch user preferences for the logged-in user
+            if (currentUsername == null || currentUsername.isEmpty()) {
+                showError("No user is currently logged in.");
+                return;
+
+            }
+            Document userPreferences = userHistoryCollection.find(new Document("username", currentUsername)).first();
+            if (userPreferences == null) {
+                showError("User preferences not found for the current user.");
+                return;
+            }
+
+            // Get top 4 categories based on scores
+            Document scores = (Document) userPreferences.get("preferences");
+            if (scores == null || scores.isEmpty()) {
+                showError("No preferences found for the current user.");
+                return;
+            }
+            // Sort categories by score and select the top 4
+            List<Map.Entry<String, Integer>> sortedCategories = scores.entrySet()
+                    .stream()
+                    .map(entry -> Map.entry(entry.getKey(), (Integer) entry.getValue()))
+                    .sorted((e1, e2) -> e2.getValue() - e1.getValue())
+                    .collect(Collectors.toList());
+
+            List<String> topCategories = sortedCategories.stream()
+                    .limit(3)  // Limit to top 4 categories
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            // Fetch articles from these categories
+            if (articlesCollection == null) {
+                showError("Articles collection is not initialized.");
+                return;
+            }
+
+            List<Document> articles = new ArrayList<>();
+            for (String category : topCategories) {
+                MongoCursor<Document> cursor = articlesCollection.find(new Document("category", category)).iterator();
+                while (cursor.hasNext()) {
+                    articles.add(cursor.next());
+                }
+            }
+
+            // Shuffle and limit to 20 articles
+            Collections.shuffle(articles);
+            articles = articles.subList(0, Math.min(20, articles.size()));
+            // Step 3: Display articles in the TableView
+
+            ObservableList<Article> articlesList = FXCollections.observableArrayList();
+
+            for (Document article : articles) {
+
+                Article articleObj = new Article(
+                        article.getString("headline"),
+                        article.getString("short_description"),
+                        article.getString("date"),
+                        article.getString("category"),
+                        article.getString("link")
+                );
+                articlesList.add(articleObj);
+            }
+
+            // Set the items in the TableView (Update with the new TableView fx:id)
+            recommendedArticlesTable.setItems(articlesList); // Use the new TableView id here
+
+        } catch (Exception e) {
+            showError("Error fetching recommended articles: " + e.getMessage());
+        }
+
+    }
+
+    private void showError(String message) {
+        System.err.println(message);
+    }
 }
+

@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import org.bson.Document;
 
 import java.io.IOException;
 
@@ -24,6 +25,23 @@ public class AdminLogin extends BaseController {
     @FXML
     public void initialize() {
         initializeDatabaseCollections();
+    }
+
+
+    @Override
+    protected boolean checkCredentials(String username, String password) {
+        try {
+            Document query = new Document("username", username)
+                    .append("password", password)
+                    .append("role", "admin");
+
+            Document user = userDetailsCollection.find(query).first();
+            return user != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Login Error", "An error occurred while verifying credentials.");
+            return false;
+        }
     }
 
     @FXML

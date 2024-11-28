@@ -32,17 +32,8 @@ public abstract class BaseController {
         alert.showAndWait();
     }
 
-    protected boolean checkCredentials(String username, String password) {
-        try {
-            Document user = userDetailsCollection.find(new Document("username", username)
-                    .append("password", password)).first();
-            return user != null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Login Error", "An error occurred while checking credentials.");
-            return false;
-        }
-    }
+    // Abstract method for checking credentials, to be implemented by subclasses
+    protected abstract boolean checkCredentials(String username, String password);
 
     // Updated saveLoginDetails method without User_type field
     protected void saveLoginDetails(String username) {
