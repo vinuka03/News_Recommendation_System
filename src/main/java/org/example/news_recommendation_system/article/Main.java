@@ -1,5 +1,7 @@
 package org.example.news_recommendation_system.article;
 
+import org.example.news_recommendation_system.DatabaseHandler;
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public class Main {
         // Step 3: Save categorized articles to the database
         ArticleSaver saver = new ArticleSaver("articles"); // Provide collection name
         saver.saveArticles(articles);
+        DatabaseHandler.closeConnection();
 
         System.out.println("Article processing completed successfully.");
     }

@@ -73,6 +73,7 @@ public class MainPageController {
     @FXML private Button updateProfileButton;
 
 
+
     // Sidebar Buttons
     @FXML private Button homeButton;
     @FXML private Button recommendedButton;
@@ -95,6 +96,7 @@ public class MainPageController {
     private MongoCollection<Document> articlesCollection;
 
     private MongoCollection<Document> userHistoryCollection;
+    private RecommendEngine recommendEngine;
 
 
     private String currentUsername;
@@ -108,7 +110,11 @@ public class MainPageController {
 
         setupTextWrapping();
         this.currentUsername = username;
+        this.recommendEngine = new RecommendEngine(userHistoryCollection, articlesCollection);
     }
+
+
+
 
     @FXML
     public void initialize() {
@@ -130,7 +136,7 @@ private void openArticleDetailsWindow(Article article) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ArticleDetails.fxml"));
         Parent articleDetailsRoot = fxmlLoader.load();
 
-        // Get the ArticleDetailsController instance from the FXMLLoader
+        // Get the ArticleDetailsController instance from the FXMLLo
         ArticleDetailsController articleDetailsController = fxmlLoader.getController();
 
         // Pass the logged-in username to the ArticleDetailsController
@@ -195,20 +201,6 @@ private void openArticleDetailsWindow(Article article) {
 
 
 
-    //save article history
-    private void saveArticleToHistory(Article article) {
-        if (userHistoryCollection != null && currentUsername != null) {
-            Document userHistory = new Document()
-                    .append("username", currentUsername)
-                    .append("headline", article.getHeadline())
-                    .append("category", article.getCategory())
-                    .append("timestamp", System.currentTimeMillis()); // Add timestamp for tracking
-
-            userHistoryCollection.insertOne(userHistory);
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Unable to save to user history.");
-        }
-    }
 
 
 
@@ -340,7 +332,7 @@ private void openArticleDetailsWindow(Article article) {
     }
     public void showRecommendedPane() {
         recommendedPane.setVisible(true);
-        fetchRecommendedArticles();
+        recommendEngine.fetchRecommendedArticles(currentUsername);
     }
 
 
@@ -487,80 +479,25 @@ private void openArticleDetailsWindow(Article article) {
 
     @FXML
     private void refreshArticles() {
-        fetchRecommendedArticles();
+        fetchRecommendedArticles(currentUsername);
     }
-    private void fetchRecommendedArticles() {
+
+    // Method to fetch and display recommended articles for the logged-in user
+    public void fetchRecommendedArticles(String currentUsername) {
         try {
-            // Fetch user preferences for the logged-in user
-            if (currentUsername == null || currentUsername.isEmpty()) {
-                showError("No user is currently logged in.");
-                return;
+            ObservableList<Article> recommendedArticles = recommendEngine.fetchRecommendedArticles(currentUsername);
 
+            if (recommendedArticles.isEmpty()) {
+                System.out.println("No recommended articles found.");
+            } else {
+                // Set the items in the TableView (assuming the TableView is set up correctly)
+                recommendedArticlesTable.setItems(recommendedArticles);  // Use the actual TableView fx:id
             }
-            Document userPreferences = userHistoryCollection.find(new Document("username", currentUsername)).first();
-            if (userPreferences == null) {
-                showError("User preferences not found for the current user.");
-                return;
-            }
-
-            // Get top 4 categories based on scores
-            Document scores = (Document) userPreferences.get("preferences");
-            if (scores == null || scores.isEmpty()) {
-                showError("No preferences found for the current user.");
-                return;
-            }
-            // Sort categories by score and select the top 4
-            List<Map.Entry<String, Integer>> sortedCategories = scores.entrySet()
-                    .stream()
-                    .map(entry -> Map.entry(entry.getKey(), (Integer) entry.getValue()))
-                    .sorted((e1, e2) -> e2.getValue() - e1.getValue())
-                    .collect(Collectors.toList());
-
-            List<String> topCategories = sortedCategories.stream()
-                    .limit(3)  // Limit to top 4 categories
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
-            // Fetch articles from these categories
-            if (articlesCollection == null) {
-                showError("Articles collection is not initialized.");
-                return;
-            }
-
-            List<Document> articles = new ArrayList<>();
-            for (String category : topCategories) {
-                MongoCursor<Document> cursor = articlesCollection.find(new Document("category", category)).iterator();
-                while (cursor.hasNext()) {
-                    articles.add(cursor.next());
-                }
-            }
-
-            // Shuffle and limit to 20 articles
-            Collections.shuffle(articles);
-            articles = articles.subList(0, Math.min(20, articles.size()));
-            // Step 3: Display articles in the TableView
-
-            ObservableList<Article> articlesList = FXCollections.observableArrayList();
-
-            for (Document article : articles) {
-
-                Article articleObj = new Article(
-                        article.getString("headline"),
-                        article.getString("short_description"),
-                        article.getString("date"),
-                        article.getString("category"),
-                        article.getString("link")
-                );
-                articlesList.add(articleObj);
-            }
-
-            // Set the items in the TableView (Update with the new TableView fx:id)
-            recommendedArticlesTable.setItems(articlesList); // Use the new TableView id here
-
-        } catch (Exception e) {
-            showError("Error fetching recommended articles: " + e.getMessage());
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
         }
-
     }
+
 
     private void showError(String message) {
         System.err.println(message);

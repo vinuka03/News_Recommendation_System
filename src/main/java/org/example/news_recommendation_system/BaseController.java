@@ -64,22 +64,10 @@ public abstract class BaseController {
         currentStage.close();
     }
 
-    protected boolean checkCredentialsWithRole(String username, String password, String role) {
-        try {
-            Document query = new Document("username", username)
-                    .append("password", password);
-            if (role != null) {
-                query.append("role", role);
-            }
-
-            Document user = userDetailsCollection.find(query).first();
-            return user != null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Login Error", "An error occurred while verifying credentials.");
-            return false;
-        }
+    protected boolean validateLoginFields(String username, String password) {
+        return !(username.isEmpty() || password.isEmpty());
     }
+
 
 
 

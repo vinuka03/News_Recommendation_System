@@ -8,6 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.ProgressIndicator?>
 <AnchorPane prefHeight="445.0" prefWidth="641.0" style="-fx-background-color: lightblue;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.news_recommendation_system.LogIn">
    <children>
       <TextField fx:id="txtUserName" layoutX="235.0" layoutY="127.0" prefHeight="45.0" prefWidth="189.0" promptText="user name" style="-fx-background-color: #ffffff; -fx-border-color: #cccccc;" />
@@ -41,5 +42,7 @@
             <Font name="Algerian" size="30.0" />
          </font>
       </Text>
+
+
    </children>
 </AnchorPane>

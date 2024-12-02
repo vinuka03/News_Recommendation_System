@@ -58,6 +58,11 @@ public class LogIn extends BaseController {
         String username = txtUserName.getText().trim();
         String password = txtPassword.getText().trim();
 
+        if (!validateLoginFields(username, password)) {
+            showAlert(Alert.AlertType.ERROR, "Login Error", "Username or Password cannot be empty.");
+            return;
+        }
+
         if (checkCredentials(username, password)) {
             showAlert(Alert.AlertType.INFORMATION, "Login", "Welcome " + username);
             saveLoginDetails(username); // Save login details using BaseController method

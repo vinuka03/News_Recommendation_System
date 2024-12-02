@@ -1,3 +1,4 @@
+
 package org.example.news_recommendation_system;
 
 import javafx.event.ActionEvent;

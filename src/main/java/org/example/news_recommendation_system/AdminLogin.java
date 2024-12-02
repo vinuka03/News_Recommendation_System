@@ -54,7 +54,7 @@ public class AdminLogin extends BaseController {
             return;
         }
 
-        if (checkCredentialsWithRole(username, password, "admin")) {
+        if (checkCredentials(username, password)) {
             saveLoginDetails(username);
             showAlert(Alert.AlertType.INFORMATION, "Welcome", "Welcome Admin!");
             loadScene("AdminMainPage.fxml", "Admin Main Page", event);
@@ -68,7 +68,5 @@ public class AdminLogin extends BaseController {
         loadScene("Login.fxml", "User Login Page", event);
     }
 
-    private boolean validateLoginFields(String username, String password) {
-        return !(username.isEmpty() || password.isEmpty());
-    }
+
 }

@@ -7,6 +7,9 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.ConnectionString;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHandler {
 
     private static final String CONNECTION_STRING = "mongodb://localhost:27017";
@@ -43,8 +46,9 @@ public class DatabaseHandler {
         return getDatabase().getCollection(collectionName);
     }
 
+
+
     public static void closeConnection() {
-        // MongoClient.close() is not needed if using MongoClients.create() as shown above.
     }
 
 

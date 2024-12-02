@@ -17,6 +17,8 @@ import com.mongodb.client.MongoClients;
 import java.net.URI;
 import java.awt.Desktop;
 
+import static org.example.news_recommendation_system.DatabaseHandler.getCollection;
+
 public class ArticleDetailsController {
 
     @FXML private Button dislikeButton;
@@ -116,8 +118,9 @@ public class ArticleDetailsController {
         }
 
         String category = currentArticle.getCategory(); // Get the category of the current article
-        MongoDatabase database = MongoClients.create("mongodb://localhost:27017").getDatabase("NEWS");
-        MongoCollection<Document> userHistoryCollection = database.getCollection("User_Preferences");
+
+        // Use static import to get the collection
+        MongoCollection<Document> userHistoryCollection = getCollection("User_Preferences");
 
         System.out.println("Updating preferences for user: " + username); // Debugging statement
 
