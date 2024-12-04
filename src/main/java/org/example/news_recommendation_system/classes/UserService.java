@@ -20,7 +20,7 @@ public class UserService {
 
     public UserService() {
         // Initialize the MongoDB connection and collections
-        mongoDatabase = db.getdatabase2();  // Assuming DatabaseHandler.getDatabase() returns the MongoDatabase instance
+        mongoDatabase = db.getDatabase();  // Assuming DatabaseHandler.getDatabase() returns the MongoDatabase instance
         this.userCollection = mongoDatabase.getCollection("User_Details");  // 'User_Details' collection for user data
         this.userHistoryCollection = mongoDatabase.getCollection("User_Preferences");
 

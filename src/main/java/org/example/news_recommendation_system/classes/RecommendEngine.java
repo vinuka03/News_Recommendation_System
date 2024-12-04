@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import org.bson.Document;
 import org.example.news_recommendation_system.classes.Article;
 
@@ -15,10 +16,14 @@ public class RecommendEngine {
     private MongoCollection<Document> userHistoryCollection;
     private MongoCollection<Document> articlesCollection;
 
+    User user = new User();
+    DatabaseHandler db;
+
     // Constructor to initialize the collections
-    public RecommendEngine(MongoCollection<Document> userHistoryCollection, MongoCollection<Document> articlesCollection) {
-        this.userHistoryCollection = userHistoryCollection;
-        this.articlesCollection = articlesCollection;
+    public RecommendEngine(DatabaseHandler database) {
+        this.db = database;
+        this.userHistoryCollection = db.getCollection("User_Preferences");
+        this.articlesCollection = db.getCollection("articles");
     }
 
     // Method to fetch recommended articles for a given user

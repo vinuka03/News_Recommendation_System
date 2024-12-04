@@ -11,10 +11,11 @@ import java.net.Socket;
 public class LoginServer {
     private static final int PORT = 12345;
     private final MongoCollection<Document> userDetailsCollection;
+    private DatabaseHandler db = new DatabaseHandler();
 
     // Constructor to initialize the userDetailsCollection using the DatabaseHandler
     public LoginServer() {
-        this.userDetailsCollection = DatabaseHandler.getCollection("users"); // Replace "users" with your actual collection name
+        this.userDetailsCollection = db.getCollection("users"); // Replace "users" with your actual collection name
     }
 
     public void start() throws IOException {

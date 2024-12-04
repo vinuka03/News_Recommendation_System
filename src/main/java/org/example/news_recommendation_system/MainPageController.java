@@ -17,10 +17,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.example.news_recommendation_system.classes.Article;
-import org.example.news_recommendation_system.classes.DatabaseHandler;
-import org.example.news_recommendation_system.classes.RecommendEngine;
-import org.example.news_recommendation_system.classes.UserService;
+import org.example.news_recommendation_system.classes.*;
 
 import java.io.IOException;
 
@@ -96,19 +93,21 @@ public class MainPageController {
     private UserService userService;
 
 
-    private String currentUsername;
 
+    private String currentUsername;
+private DatabaseHandler db = new DatabaseHandler();
     // Method to initialize the controller with MongoDB and user data
     public void initializeWithData(String username) {
-        this.userDetailsCollection = DatabaseHandler.getCollection("User_Details");
-        this.articlesCollection = DatabaseHandler.getCollection("NewsArticles");
-        this.articlesCollection = DatabaseHandler.getCollection("articles");
-        this.userHistoryCollection = DatabaseHandler.getCollection("User_Preferences");
+        this.userDetailsCollection = db.getCollection("User_Details");
+        this.articlesCollection = db.getCollection("NewsArticles");
+        this.articlesCollection = db.getCollection("articles");
+        this.userHistoryCollection = db.getCollection("User_Preferences");
 
         setupTextWrapping();
         this.currentUsername = username;
-        this.recommendEngine = new RecommendEngine(userHistoryCollection, articlesCollection);
+        this.recommendEngine = new RecommendEngine(db);
         userService = new UserService();
+
 
     }
 

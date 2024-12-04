@@ -13,7 +13,7 @@ public class AdminUser {
     public AdminUser(MongoCollection<Document> userDetailsCollection, MongoCollection<Document> articlesCollection) {
         this.userDetailsCollection = userDetailsCollection;
         this.articlesCollection = articlesCollection;
-        MongoDatabase databse = db.getdatabase2();
+        MongoDatabase database = db.getDatabase();
     }
 
     // Method to delete a user

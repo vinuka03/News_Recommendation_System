@@ -100,12 +100,12 @@ public class AdminPageController {
     private ArticleCategorizer articleCategorizer;
     private AdminUser adminUser;
 
-
+    private DatabaseHandler db = new DatabaseHandler();
     // Initialize the Admin Page Controller
     @FXML
     public void initialize() {
-        userDetailsCollection = DatabaseHandler.getCollection("User_Details");
-        articlesCollection = DatabaseHandler.getCollection("articles");
+        userDetailsCollection = db.getCollection("User_Details");
+        articlesCollection = db.getCollection("articles");
         setupUserTableColumns();
         setupArticleTableColumns();
         loadUsers();

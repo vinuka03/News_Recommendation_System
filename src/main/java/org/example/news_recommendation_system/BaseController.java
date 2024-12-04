@@ -18,11 +18,12 @@ public abstract class BaseController {
 
     protected MongoCollection<Document> userDetailsCollection;
     protected MongoCollection<Document> userLoginDetailsCollection;
+    private DatabaseHandler db = new DatabaseHandler();
 
     // Abstract method to enforce specific implementations in child classes
     protected void initializeDatabaseCollections() {
-        userDetailsCollection = DatabaseHandler.getCollection("User_Details");
-        userLoginDetailsCollection = DatabaseHandler.getCollection("User_Login_Details");
+        userDetailsCollection = db.getCollection("User_Details");
+        userLoginDetailsCollection = db.getCollection("User_Login_Details");
     }
 
     protected void showAlert(Alert.AlertType alertType, String title, String message) {
@@ -34,6 +35,7 @@ public abstract class BaseController {
     }
 
     // Abstract method for checking credentials, to be implemented by subclasses
+    protected abstract boolean checkCredentials(String username, String password);
 
 
     // Updated saveLoginDetails method without User_type field

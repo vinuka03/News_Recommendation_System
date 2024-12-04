@@ -37,11 +37,20 @@ public class LogIn extends BaseController {
 
     // Override the checkCredentials method to perform user-specific logic
 
-    public boolean checkCredentials(String username, String password) {
+    @Override
+    protected boolean checkCredentials(String username, String password) {
         try {
+            // Find the user document based on username and password
             Document user = userDetailsCollection.find(new Document("username", username)
                     .append("password", password)).first();
-            return user != null;
+
+            if (user != null) {
+                // Check if the user is not an admin
+                String role = user.getString("role");
+                return role != null && role.equals("user");
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Login Error", "An error occurred while checking credentials.");

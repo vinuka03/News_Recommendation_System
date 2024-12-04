@@ -28,8 +28,8 @@ public class AdminLogin extends BaseController {
     }
 
 
-
-    public boolean checkCredentials(String username, String password) {
+    @Override
+    protected boolean checkCredentials(String username, String password) {
         try {
             Document query = new Document("username", username)
                     .append("password", password)

@@ -10,13 +10,14 @@ import java.util.Map;
 public class ArticleSaver {
 
     private final String collectionName;
+    private DatabaseHandler db = new DatabaseHandler();
 
     public ArticleSaver(String collectionName) {
         this.collectionName = collectionName;
     }
 
     public void saveArticles(List<Map<String, Object>> articles) {
-        MongoCollection<Document> collection = DatabaseHandler.getCollection(collectionName);
+        MongoCollection<Document> collection = db.getCollection(collectionName);
 
         for (Map<String, Object> article : articles) {
             if (!"Uncategorized".equals(article.get("category"))) {
