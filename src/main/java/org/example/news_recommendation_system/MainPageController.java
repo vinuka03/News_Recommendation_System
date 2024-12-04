@@ -1,8 +1,5 @@
 package org.example.news_recommendation_system;
 
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Filters;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,13 +17,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.example.news_recommendation_system.classes.Article;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
+import org.example.news_recommendation_system.classes.RecommendEngine;
+import org.example.news_recommendation_system.classes.UserService;
 
-import javax.swing.*;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-
 
 
 public class MainPageController {
@@ -97,6 +93,7 @@ public class MainPageController {
 
     private MongoCollection<Document> userHistoryCollection;
     private RecommendEngine recommendEngine;
+    private UserService userService;
 
 
     private String currentUsername;
@@ -111,7 +108,12 @@ public class MainPageController {
         setupTextWrapping();
         this.currentUsername = username;
         this.recommendEngine = new RecommendEngine(userHistoryCollection, articlesCollection);
+        userService = new UserService();
+
     }
+
+
+
 
 
 
@@ -153,57 +155,12 @@ private void openArticleDetailsWindow(Article article) {
 
 
         // Optionally, save article view to preferences (or history)
-        saveArticleCategoryToPreferences(article);  // This method updates the user preferences based on the article viewed
+        userService.saveArticleCategoryToPreferences(currentUsername, article.getCategory());  // This method updates the user preferences based on the article viewed
     } catch (IOException e) {
         e.printStackTrace();
         showAlert(Alert.AlertType.ERROR, "Error", "Failed to open article details.");
     }
 }
-
-
-
-
-
-
-    // Method to save article category score to the User_Preference collection
-    private void saveArticleCategoryToPreferences(Article article) {
-        if (userHistoryCollection != null && currentUsername != null) {
-            // Retrieve the category from the article
-            String category = article.getCategory();
-
-            // Query the User_Preference collection to find the user's preference document
-            Document userPreference = userHistoryCollection.find(new Document("username", currentUsername)).first();
-
-            if (userPreference != null) {
-                // Retrieve the current preferences (embedded document) from the user document
-                Document preferences = (Document) userPreference.get("preferences");
-
-                // Check if the category exists in the preferences, if not set it to 0
-                int currentScore = preferences.containsKey(category) ? preferences.getInteger(category) : 0;
-
-                // Increment the score for the relevant category
-                int newScore = currentScore + 1;
-
-                // Update the User_Preference document with the new score for the category
-                userHistoryCollection.updateOne(
-                        new Document("username", currentUsername),
-                        new Document("$set", new Document("preferences." + category, newScore))
-                );
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Error", "User preferences not found.");
-            }
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Unable to save to user preferences.");
-        }
-    }
-
-
-
-
-
-
-
-
 
 
 
@@ -325,14 +282,17 @@ private void openArticleDetailsWindow(Article article) {
             loadUserProfile();  // Load profile details when showing the Profile pane
         }
         if (pane == viewPane) {
-            loadArticlesFromDatabase();// Load articles when showing the View pane
+            ObservableList<Article> articlesList = Article.loadArticlesFromDatabase(articlesCollection);
+            articlesTable.setItems(articlesList);
             customizeTableRowHeight(); // Customize row height
             setupTextWrapping();
         }
     }
     public void showRecommendedPane() {
         recommendedPane.setVisible(true);
-        recommendEngine.fetchRecommendedArticles(currentUsername);
+        // Fetch recommended articles using the method from RecommendEngine
+        ObservableList<Article> recommendedArticles = recommendEngine.fetchRecommendedArticles(currentUsername);
+        recommendedArticlesTable.setItems(recommendedArticles);
     }
 
 
@@ -431,25 +391,8 @@ private void openArticleDetailsWindow(Article article) {
         alert.showAndWait();
     }
 
-    // Load articles from the MongoDB database
-    private void loadArticlesFromDatabase() {
-        if (articlesCollection != null) {
-            ObservableList<Article> articlesList = FXCollections.observableArrayList();
-            for (Document doc : articlesCollection.find()) {
-                Article article = new Article(
-                        doc.getString("headline"),
-                        doc.getString("short_description"),
-                        doc.getString("date"),
-                        doc.getString("category"),
-                        doc.getString("link")
-                );
-                articlesList.add(article);
-            }
-            articlesTable.setItems(articlesList); // Set the list to the TableView
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Error", "Unable to load articles.");
-        }
-    }
+
+
     // Pane navigation methods
     @FXML
     private void showHomePane(ActionEvent event) { showPane(homePane); }
@@ -479,24 +422,11 @@ private void openArticleDetailsWindow(Article article) {
 
     @FXML
     private void refreshArticles() {
-        fetchRecommendedArticles(currentUsername);
+        showRecommendedPane();
     }
 
     // Method to fetch and display recommended articles for the logged-in user
-    public void fetchRecommendedArticles(String currentUsername) {
-        try {
-            ObservableList<Article> recommendedArticles = recommendEngine.fetchRecommendedArticles(currentUsername);
 
-            if (recommendedArticles.isEmpty()) {
-                System.out.println("No recommended articles found.");
-            } else {
-                // Set the items in the TableView (assuming the TableView is set up correctly)
-                recommendedArticlesTable.setItems(recommendedArticles);  // Use the actual TableView fx:id
-            }
-        } catch (RuntimeException e) {
-            showError(e.getMessage());
-        }
-    }
 
 
     private void showError(String message) {

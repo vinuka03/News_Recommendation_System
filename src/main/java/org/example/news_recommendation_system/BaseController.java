@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import com.mongodb.client.MongoCollection;
 import javafx.stage.Stage;
 import org.bson.Document;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public abstract class BaseController {
     }
 
     // Abstract method for checking credentials, to be implemented by subclasses
-    protected abstract boolean checkCredentials(String username, String password);
+
 
     // Updated saveLoginDetails method without User_type field
     protected void saveLoginDetails(String username) {

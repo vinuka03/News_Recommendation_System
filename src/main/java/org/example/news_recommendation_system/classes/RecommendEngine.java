@@ -1,11 +1,11 @@
-package org.example.news_recommendation_system;
+package org.example.news_recommendation_system.classes;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.bson.Document;
-import org.example.news_recommendation_system.Article;
+import org.example.news_recommendation_system.classes.Article;
 
 import java.util.*;
 import java.util.stream.Collectors;

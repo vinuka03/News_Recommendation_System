@@ -15,4 +15,6 @@ module org.example.news_recommendation_system {
     exports org.example.news_recommendation_system;
     exports org.example.news_recommendation_system.article;
     opens org.example.news_recommendation_system.article to javafx.fxml;
+    exports org.example.news_recommendation_system.classes;
+    opens org.example.news_recommendation_system.classes to javafx.fxml;
 }

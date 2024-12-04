@@ -12,10 +12,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.bson.Document;
+import org.example.news_recommendation_system.classes.UserService;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SignupController {

@@ -1,4 +1,4 @@
-package org.example.news_recommendation_system;
+package org.example.news_recommendation_system.classes;
 
 
 public class User {

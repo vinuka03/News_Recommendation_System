@@ -2,7 +2,7 @@ package org.example.news_recommendation_system.article;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import org.example.news_recommendation_system.DatabaseHandler;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
 
 import java.util.List;
 import java.util.Map;

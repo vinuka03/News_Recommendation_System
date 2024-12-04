@@ -18,6 +18,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.bson.Document;
 import org.example.news_recommendation_system.article.ArticleCategorizer;
+import org.example.news_recommendation_system.classes.AdminUser;
+import org.example.news_recommendation_system.classes.Article;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
+import org.example.news_recommendation_system.classes.User;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,6 +81,7 @@ public class AdminPageController {
     @FXML
     private StackPane adminContentStackPane;
 
+
     @FXML
     private Button logoutButton;
     @FXML
@@ -93,11 +98,14 @@ public class AdminPageController {
     private MongoCollection<Document> userDetailsCollection;
     private MongoCollection<Document> articlesCollection; // Add this for the articles collection
     private ArticleCategorizer articleCategorizer;
+    private AdminUser adminUser;
+
 
     // Initialize the Admin Page Controller
     @FXML
     public void initialize() {
-        setupDatabaseConnection();
+        userDetailsCollection = DatabaseHandler.getCollection("User_Details");
+        articlesCollection = DatabaseHandler.getCollection("articles");
         setupUserTableColumns();
         setupArticleTableColumns();
         loadUsers();
@@ -106,21 +114,7 @@ public class AdminPageController {
         articleCategorizer = new ArticleCategorizer();
         loadCategoryImage();
         showPane(AdminHomePane);
-    }
-
-    // Setup the MongoDB connection
-    private void setupDatabaseConnection() {
-        try {
-            userDetailsCollection = DatabaseHandler.getCollection("User_Details");
-            articlesCollection = DatabaseHandler.getCollection("articles"); // Initialize articles collection
-
-            if (userDetailsCollection == null || articlesCollection == null) {
-                throw new IllegalStateException("Required collections do not exist in the database.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Connection Error", "Could not connect to MongoDB.");
-        }
+        adminUser = new AdminUser(userDetailsCollection, articlesCollection);
     }
 
 
@@ -201,37 +195,25 @@ public class AdminPageController {
 
     // Delete a user from the database
     private void deleteUser(User user) {
-        try {
-            Document query = new Document("username", user.getUsername());
-            long deletedCount = userDetailsCollection.deleteOne(query).getDeletedCount();
-
-            if (deletedCount > 0) {
-                userTableView.getItems().remove(user);
-                showAlert(Alert.AlertType.INFORMATION, "User Deleted", "The user has been deleted successfully.");
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete user from the database.");
-            }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Delete Error", "An error occurred while deleting the user.");
+        if (adminUser.deleteUser(user.getUsername())) {
+            userTableView.getItems().remove(user);
+            showAlert(Alert.AlertType.INFORMATION, "User Deleted", "The user has been deleted successfully.");
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete user from the database.");
         }
     }
+
 
     // Delete an article from the database
     private void deleteArticle(Article article) {
-        try {
-            Document query = new Document("headline", article.getHeadline());
-            long deletedCount = articlesCollection.deleteOne(query).getDeletedCount();
-
-            if (deletedCount > 0) {
-                articleTableView.getItems().remove(article);
-                showAlert(Alert.AlertType.INFORMATION, "Article Deleted", "The article has been deleted successfully.");
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete article from the database.");
-            }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Delete Error", "An error occurred while deleting the article.");
+        if (adminUser.deleteArticle(article.getHeadline())) {
+            articleTableView.getItems().remove(article);
+            showAlert(Alert.AlertType.INFORMATION, "Article Deleted", "The article has been deleted successfully.");
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Delete Error", "Failed to delete article from the database.");
         }
     }
+
 
     // Set visibility for admin panes
     private void showPane(Pane paneToShow) {

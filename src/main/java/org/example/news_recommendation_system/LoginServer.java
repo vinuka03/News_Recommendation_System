@@ -2,6 +2,7 @@ package org.example.news_recommendation_system;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
 
 import java.io.*;
 import java.net.ServerSocket;

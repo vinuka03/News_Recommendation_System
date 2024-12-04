@@ -7,32 +7,37 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.bson.Document;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.MongoClients;
+import org.example.news_recommendation_system.classes.Article;
+import org.example.news_recommendation_system.classes.UserService;
 
-import java.net.URI;
 import java.awt.Desktop;
-
-import static org.example.news_recommendation_system.DatabaseHandler.getCollection;
+import java.net.URI;
 
 public class ArticleDetailsController {
 
-    @FXML private Button dislikeButton;
-    @FXML private Button likeButton;
-    @FXML private Hyperlink articleLink;
-    @FXML private Button closeButton;
-    @FXML private TextField detailHeadline;
-    @FXML private TextArea detailDescription;
-    @FXML private TextField detailDate;
-    @FXML private TextField detailCategory;
+    @FXML
+    private Button dislikeButton;
+    @FXML
+    private Button likeButton;
+    @FXML
+    private Hyperlink articleLink;
+    @FXML
+    private Button closeButton;
+    @FXML
+    private TextField detailHeadline;
+    @FXML
+    private TextArea detailDescription;
+    @FXML
+    private TextField detailDate;
+    @FXML
+    private TextField detailCategory;
 
     private Article currentArticle; // Declare the currentArticle variable
     private String userRating = ""; // To keep track of the current rating ("like" or "dislike")
     private String username; // To store the dynamically set username
+
+    private final UserService userService = new UserService(); // Create an instance of UserService
+
     // Method to set article data
     public void initializeWithArticle(Article article) {
         currentArticle = article; // Assign the passed article to currentArticle
@@ -57,8 +62,6 @@ public class ArticleDetailsController {
         System.out.println("Username set to: " + username); // Optional: To verify if it's being set correctly
     }
 
-
-
     // Open the link in the default browser
     private void openLink(String url) {
         try {
@@ -71,34 +74,54 @@ public class ArticleDetailsController {
     // Submit a like for the article
     @FXML
     private void submitLike(ActionEvent event) {
+        if (username == null || currentArticle == null) {
+            System.err.println("Error: Missing username or article data.");
+            return;
+        }
+
+        String category = currentArticle.getCategory();
         if ("like".equals(userRating)) {
             System.out.println("User removed the like for the article: " + currentArticle.getHeadline());
             userRating = ""; // Reset the rating
             likeButton.setStyle(null); // Reset button style
-            updateUserPreferenceScore(-2); // Deduct 2 marks from the category
+            if (!userService.updateUserPreferenceScore(username, category, -2)) {
+                System.err.println("Failed to update user preference score.");
+            }
         } else {
             System.out.println("User liked the article: " + currentArticle.getHeadline());
             userRating = "like";
             likeButton.setStyle("-fx-background-color: #4caf50;"); // Highlight the button
             dislikeButton.setStyle(null); // Reset the other button
-            updateUserPreferenceScore(2); // Add 2 marks to the category
+            if (!userService.updateUserPreferenceScore(username, category, 2)) {
+                System.err.println("Failed to update user preference score.");
+            }
         }
     }
 
     // Submit a dislike for the article
     @FXML
     private void submitDislike(ActionEvent event) {
+        if (username == null || currentArticle == null) {
+            System.err.println("Error: Missing username or article data.");
+            return;
+        }
+
+        String category = currentArticle.getCategory();
         if ("dislike".equals(userRating)) {
             System.out.println("User removed the dislike for the article: " + currentArticle.getHeadline());
             userRating = ""; // Reset the rating
             dislikeButton.setStyle(null); // Reset button style
-            updateUserPreferenceScore(2); // Add 2 marks to the category
+            if (!userService.updateUserPreferenceScore(username, category, 2)) {
+                System.err.println("Failed to update user preference score.");
+            }
         } else {
             System.out.println("User disliked the article: " + currentArticle.getHeadline());
             userRating = "dislike";
             dislikeButton.setStyle("-fx-background-color: #f44336;"); // Highlight the button
             likeButton.setStyle(null); // Reset the other button
-            updateUserPreferenceScore(-2); // Deduct 2 marks from the category
+            if (!userService.updateUserPreferenceScore(username, category, -2)) {
+                System.err.println("Failed to update user preference score.");
+            }
         }
     }
 
@@ -108,28 +131,4 @@ public class ArticleDetailsController {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();  // Close the article details window
     }
-
-
-    // Method to update the user's preferences in the database
-    private void updateUserPreferenceScore(int points) {
-        if (username == null) {
-            System.out.println("Error: No logged-in user.");
-            return;
-        }
-
-        String category = currentArticle.getCategory(); // Get the category of the current article
-
-        // Use static import to get the collection
-        MongoCollection<Document> userHistoryCollection = getCollection("User_Preferences");
-
-        System.out.println("Updating preferences for user: " + username); // Debugging statement
-
-        // Update the specific category score for the current user
-        userHistoryCollection.updateOne(
-                Filters.eq("username", username), // Find the user by the actual logged-in username
-                Updates.inc("preferences." + category, points) // Increment the score for the category
-        );
-    }
-
-
 }

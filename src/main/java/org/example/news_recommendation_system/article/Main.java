@@ -1,6 +1,6 @@
 package org.example.news_recommendation_system.article;
 
-import org.example.news_recommendation_system.DatabaseHandler;
+import org.example.news_recommendation_system.classes.DatabaseHandler;
 
 import java.util.List;
 import java.util.Map;

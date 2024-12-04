@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.bson.Document;
-import org.example.news_recommendation_system.BaseController;
-import org.example.news_recommendation_system.DatabaseHandler;
 
 import java.io.IOException;
 
@@ -38,8 +36,8 @@ public class LogIn extends BaseController {
     }
 
     // Override the checkCredentials method to perform user-specific logic
-    @Override
-    protected boolean checkCredentials(String username, String password) {
+
+    public boolean checkCredentials(String username, String password) {
         try {
             Document user = userDetailsCollection.find(new Document("username", username)
                     .append("password", password)).first();
