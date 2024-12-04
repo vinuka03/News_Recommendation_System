@@ -35,7 +35,7 @@ public class LogIn extends BaseController {
         initializeDatabaseCollections();
     }
 
-    // Override the checkCredentials method to perform user-specific logic
+    // Override the checkCredentials method to perform user-specific
 
     @Override
     protected boolean checkCredentials(String username, String password) {
