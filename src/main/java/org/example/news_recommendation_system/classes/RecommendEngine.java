@@ -16,7 +16,7 @@ public class RecommendEngine {
     private MongoCollection<Document> userHistoryCollection;
     private MongoCollection<Document> articlesCollection;
 
-    User user = new User();
+
     DatabaseHandler db;
 
     // Constructor to initialize the collections
@@ -70,16 +70,20 @@ public class RecommendEngine {
             Collections.shuffle(articles);
             articles = articles.subList(0, Math.min(20, articles.size()));
 
-            // Convert articles to Article objects for use in the TableView
+            // Convert articles to Article objects using getters and setters
             ObservableList<Article> articlesList = FXCollections.observableArrayList();
             for (Document article : articles) {
-                Article articleObj = new Article(
-                        article.getString("headline"),
-                        article.getString("short_description"),
-                        article.getString("date"),
-                        article.getString("category"),
-                        article.getString("link")
-                );
+                // Create a new Article object
+                Article articleObj = new Article("", "", "", "", "");
+
+                // Use setters to set the article's properties
+                articleObj.setHeadline(article.getString("headline"));
+                articleObj.setShortDescription(article.getString("short_description"));
+                articleObj.setDate(article.getString("date"));
+                articleObj.setCategory(article.getString("category"));
+                articleObj.setLink(article.getString("link"));
+
+                // Add the article to the list
                 articlesList.add(articleObj);
             }
 
@@ -89,4 +93,5 @@ public class RecommendEngine {
             throw new RuntimeException("Error fetching recommended articles: " + e.getMessage(), e);
         }
     }
+
 }

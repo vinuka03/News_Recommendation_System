@@ -12,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.bson.Document;
+import org.example.news_recommendation_system.classes.User;
 import org.example.news_recommendation_system.classes.UserService;
 
 import java.io.IOException;
@@ -99,13 +100,8 @@ public class SignupController {
             return;
         }
 
-        // Create new user document
-        Document newUser = new Document("firstName", firstName)
-                .append("lastName", lastName)
-                .append("email", email)
-                .append("username", username)
-                .append("password", password)
-                .append("role", "user"); // Assign 'user' role
+        // Create a new User object
+        User newUser = new User(username, email, firstName, lastName, password);
 
         // Save the user and preferences
         boolean userCreated = userService.createUser(newUser);
@@ -127,6 +123,7 @@ public class SignupController {
             clearFields();  // Clear fields even if user data is not saved
         }
     }
+
 
     @FXML
     private void goBackToLogIN(ActionEvent event) throws IOException {

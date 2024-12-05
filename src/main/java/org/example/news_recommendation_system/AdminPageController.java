@@ -155,7 +155,7 @@ public class AdminPageController {
             users.forEach(userDoc -> {
                 String username = userDoc.getString("username");
                 String email = userDoc.getString("email");
-                userTableView.getItems().add(new User(username, email));
+                userTableView.getItems().add(new User(username, email,null,null,null));
             });
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Data Loading Error", "Unable to fetch users from the database.");

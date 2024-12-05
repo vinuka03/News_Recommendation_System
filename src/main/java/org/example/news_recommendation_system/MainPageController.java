@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.example.news_recommendation_system.classes.*;
+import org.example.news_recommendation_system.classes.UserService;
+
 
 import java.io.IOException;
 
@@ -297,21 +299,21 @@ private void openArticleDetailsWindow(Article article) {
 
     // Load user details into profile fields
     private void loadUserProfile() {
-        if (userDetailsCollection != null && currentUsername != null) {
-            Document user = userDetailsCollection.find(new Document("username", currentUsername)).first();
+        if (userService != null && currentUsername != null) {
+            User user = userService.loadUserProfile(currentUsername);
             if (user != null) {
-                profileUsername.setText(user.getString("username"));
-                profileEmail.setText(user.getString("email"));
-                profileFirstName.setText(user.getString("firstName"));
-                profileLastName.setText(user.getString("lastName"));
-                profilePassword.setText(user.getString("password"));
+                profileUsername.setText(user.getUsername());
+                profileEmail.setText(user.getEmail());
+                profileFirstName.setText(user.getFirstName());
+                profileLastName.setText(user.getLastName());
+                profilePassword.setText(user.getPassword());
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error", "User data not found.");
             }
         }
     }
 
-    // Handle the "Update" button click to save profile changes
+
     @FXML
     private void updateProfile(ActionEvent event) {
         String newUsername = profileUsername.getText();
@@ -320,57 +322,29 @@ private void openArticleDetailsWindow(Article article) {
         String newLastName = profileLastName.getText();
         String newPassword = profilePassword.getText();
 
-        // Validate input before updating
-        if (newEmail == null || newEmail.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "Email cannot be empty.");
-            return;
-        }
-        if (newFirstName == null || newFirstName.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "First Name cannot be empty.");
-            return;
-        }
-        if (newLastName == null || newLastName.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "Last Name cannot be empty.");
-            return;
-        }
-        if (newPassword == null || newPassword.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "Password cannot be empty.");
-            return;
-        }
-        if (newPassword.length() < 8) {
-            showAlert(Alert.AlertType.ERROR, "Input Error", "Password must be at least 8 characters.");
+        // Validate inputs
+        if (newEmail == null || newEmail.isEmpty() || newFirstName == null ||
+                newFirstName.isEmpty() || newLastName == null || newLastName.isEmpty() ||
+                newPassword == null || newPassword.isEmpty() || newPassword.length() < 8) {
+            showAlert(Alert.AlertType.ERROR, "Input Error", "Please fill all fields correctly.");
             return;
         }
 
-        // Check if the email already exists in the database for another user (excluding the current user)
-        Document existingEmailUser = userDetailsCollection.find(new Document("email", newEmail)).first();
-        if (existingEmailUser != null && !existingEmailUser.getString("username").equals(currentUsername)) {
-            showAlert(Alert.AlertType.ERROR, "Email Taken", "The email is already taken by another user.");
-            return;
+        // Create a User object to pass to the updateUserDetails method
+        User updatedUser = new User(newUsername, newEmail, newFirstName, newLastName, newPassword);
+
+        // Call the updateUserDetails method
+        String errorMessage = userService.updateUserDetails(updatedUser);
+        if (errorMessage != null) {
+            showAlert(Alert.AlertType.ERROR, "Error", errorMessage);
+        } else {
+            showAlert(Alert.AlertType.INFORMATION, "Profile Update", "Your profile has been updated successfully.");
+            currentUsername = newUsername; // Update current username
+            clearProfileFields(); // Optional: Clear fields
         }
-
-        // Check if the username already exists (excluding the current user)
-        Document existingUser = userDetailsCollection.find(new Document("username", newUsername)).first();
-        if (existingUser != null && !newUsername.equals(currentUsername)) {
-            showAlert(Alert.AlertType.ERROR, "Username Taken", "The new username is already taken.");
-            return;
-        }
-
-        // Create a document with updated details
-        Document updatedDetails = new Document("email", newEmail)
-                .append("firstName", newFirstName)
-                .append("lastName", newLastName)
-                .append("password", newPassword);
-
-        // Update MongoDB
-        userDetailsCollection.updateOne(new Document("username", currentUsername), new Document("$set", updatedDetails));
-        currentUsername = newUsername;  // Update the current username if changed
-
-        showAlert(Alert.AlertType.INFORMATION, "Profile Update", "Your profile has been updated successfully.");
-
-        // Clear the fields after update
-        clearProfileFields();
     }
+
+
 
     // Method to clear fields in the profile
     private void clearProfileFields() {

@@ -13,25 +13,67 @@ public class UserService {
 
     private MongoCollection<Document> userCollection;
     private MongoCollection<Document> userHistoryCollection;
-    DatabaseHandler db=new DatabaseHandler();
-
-
+    private DatabaseHandler db = new DatabaseHandler();
     private MongoDatabase mongoDatabase;
 
     public UserService() {
-        // Initialize the MongoDB connection and collections
-        mongoDatabase = db.getDatabase();  // Assuming DatabaseHandler.getDatabase() returns the MongoDatabase instance
-        this.userCollection = mongoDatabase.getCollection("User_Details");  // 'User_Details' collection for user data
-        this.userHistoryCollection = mongoDatabase.getCollection("User_Preferences");
-
+        mongoDatabase = db.getDatabase();
+        this.userCollection = mongoDatabase.getCollection("User_Details");  // Collection for user data
+        this.userHistoryCollection = mongoDatabase.getCollection("User_Preferences"); // Collection for user preferences
     }
 
-    // Method to validate email format using a simple regex (you can refine this if needed)
+    // Load user profile by username, returning a User object
+    public User loadUserProfile(String username) {
+        Document userDocument = userCollection.find(new Document("username", username)).first();
+        if (userDocument != null) {
+            String userName = userDocument.getString("username");
+            String email = userDocument.getString("email");
+            String firstName = userDocument.getString("firstName");
+            String lastName = userDocument.getString("lastName");
+            String password = userDocument.getString("password");
+
+            // Create and return a User object with the retrieved data
+            User user = new User(userName, email, firstName, lastName, password);
+            return user;
+        }
+        return null; // Return null if the user is not found
+    }
+
+    // Update user details in the database using the User class's getters and setters
+    public String updateUserDetails(User updatedUser) {
+        // Get the current username from the User object
+        String currentUsername = updatedUser.getUsername();
+
+        // Check if the email exists for another user
+        Document existingEmailUser = userCollection.find(new Document("email", updatedUser.getEmail())).first();
+        if (existingEmailUser != null && !existingEmailUser.getString("username").equals(currentUsername)) {
+            return "The email is already taken by another user.";
+        }
+
+        // Check if the username exists
+        Document existingUser = userCollection.find(new Document("username", updatedUser.getUsername())).first();
+        if (existingUser != null && !updatedUser.getUsername().equals(currentUsername)) {
+            return "The new username is already taken.";
+        }
+
+        // Update user details in MongoDB using the User object
+        Document updatedDetails = new Document("username", updatedUser.getUsername())
+                .append("email", updatedUser.getEmail())
+                .append("firstName", updatedUser.getFirstName())
+                .append("lastName", updatedUser.getLastName())
+                .append("password", updatedUser.getPassword());
+
+        userCollection.updateOne(new Document("username", currentUsername), new Document("$set", updatedDetails));
+        return null; // Return null if no errors
+    }
+
+
+    // Validate email format using a simple regex
     public boolean isValidEmail(String email) {
         return email != null && email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
     }
 
-    // Method to validate password strength (at least 8 characters in this example)
+    // Validate password strength (at least 8 characters in this example)
     public boolean isPasswordValid(String password) {
         return password != null && password.length() >= 8;
     }
@@ -46,11 +88,16 @@ public class UserService {
         return existingUser != null;
     }
 
-    // Method to create a new user in the MongoDB collection
-    public boolean createUser(Document newUser) {
+    // Create a new user in the MongoDB collection using the User class
+    public boolean createUser(User newUser) {
         try {
-            // Directly insert the plain password (no hashing)
-            userCollection.insertOne(newUser);
+            Document userDocument = new Document("username", newUser.getUsername())
+                    .append("email", newUser.getEmail())
+                    .append("firstName", newUser.getFirstName())
+                    .append("lastName", newUser.getLastName())
+                    .append("password", newUser.getPassword())
+                    .append("role", "user");
+            userCollection.insertOne(userDocument);
             return true;  // Return true if the user is successfully created
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,13 +105,10 @@ public class UserService {
         }
     }
 
-    // Method to save user preferences to the 'User_Preferences' collection (updated collection name)
+    // Save user preferences to the 'User_Preferences' collection
     public boolean saveUserPreferences(Document userPreferences) {
         try {
-            // Get the MongoDB collection for user preferences (corrected collection name)
             MongoCollection<Document> preferenceCollection = mongoDatabase.getCollection("User_Preferences");
-
-            // Insert the preferences document
             preferenceCollection.insertOne(userPreferences);
             return true;
         } catch (Exception e) {
@@ -73,43 +117,30 @@ public class UserService {
         }
     }
 
-
-    // Method to update user preferences in the 'User_Preferences' collection
+    // Update user preference score
     public boolean updateUserPreferenceScore(String username, String category, int points) {
         try {
             MongoCollection<Document> preferenceCollection = mongoDatabase.getCollection("User_Preferences");
-
-            // Update the specific category score for the user
             preferenceCollection.updateOne(
-                    Filters.eq("username", username), // Find the user by username
-                    Updates.inc("preferences." + category, points) // Increment the score for the category
+                    Filters.eq("username", username),
+                    Updates.inc("preferences." + category, points)
             );
             System.out.println("Updated preference score for user: " + username + ", category: " + category + ", points: " + points);
-            return true; // Indicate successful update
+            return true;
         } catch (Exception e) {
             System.err.println("Error updating preference score: " + e.getMessage());
-            return false; // Indicate failure
+            return false;
         }
     }
 
-
-    // Method to save article category score to the User_Preference collection when user views the article
+    // Save article category score to the User_Preference collection when user views the article
     public void saveArticleCategoryToPreferences(String username, String category) {
         if (userHistoryCollection != null && username != null) {
-            // Query the User_Preference collection to find the user's preference document
             Document userPreference = userHistoryCollection.find(new Document("username", username)).first();
-
             if (userPreference != null) {
-                // Retrieve the current preferences (embedded document) from the user document
                 Document preferences = (Document) userPreference.get("preferences");
-
-                // Check if the category exists in the preferences, if not set it to 0
                 int currentScore = preferences.containsKey(category) ? preferences.getInteger(category) : 0;
-
-                // Increment the score for the relevant category
                 int newScore = currentScore + 1;
-
-                // Update the User_Preference document with the new score for the category
                 userHistoryCollection.updateOne(
                         new Document("username", username),
                         new Document("$set", new Document("preferences." + category, newScore))

@@ -26,24 +26,41 @@ public class Article {
         return headline;
     }
 
+    public void setHeadline(String headline) {
+        this.headline = headline;
+    }
 
     public String getShortDescription() {
         return shortDescription;
     }
 
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
 
-    public  String  getLink(){return link;}
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public String getDate() {
         return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getCategory() {
         return category;
     }
 
-
-
-
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     // Static method to load articles from MongoDB
     public static ObservableList<Article> loadArticlesFromDatabase(MongoCollection<Document> collection) {
@@ -63,6 +80,4 @@ public class Article {
         }
         return articlesList;
     }
-
-
 }
